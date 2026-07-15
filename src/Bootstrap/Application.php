@@ -30,7 +30,12 @@ class Application {
      * Plugin activation hook callback.
      */
     public static function activate(): void {
-        // Will trigger database migrations and flush rewrite rules.
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        
+        $migration = new \OpaReklama\Booking\Database\MigrationManager();
+        $migration->migrate();
+
+        flush_rewrite_rules();
     }
 
     /**
