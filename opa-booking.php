@@ -84,8 +84,5 @@ $myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateCh
 	__FILE__,
 	'opa-booking-engine'
 );
-// Optional: If it's a private repository, you need to set the authentication token.
-if (defined('OPA_GITHUB_TOKEN')) {
-    $myUpdateChecker->setAuthentication(OPA_GITHUB_TOKEN);
-}
+
 
