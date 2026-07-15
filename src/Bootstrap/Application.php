@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace OpaReklama\Booking\Bootstrap;
 
 /**
@@ -8,22 +10,48 @@ namespace OpaReklama\Booking\Bootstrap;
 class Application {
 
     /**
-     * Initializes the plugin.
+     * Boot the application.
+     */
+    public static function boot(): void {
+        $app = new self();
+        $app->run();
+    }
+
+    /**
+     * Run the application.
      */
     public function run(): void {
-        // Here we will eventually initialize the DI Container
-        // and load hooks for Admin, API, Frontend, etc.
-        
         $this->load_dependencies();
         $this->define_admin_hooks();
         $this->define_public_hooks();
     }
 
     /**
+     * Plugin activation hook callback.
+     */
+    public static function activate(): void {
+        // Will trigger database migrations and flush rewrite rules.
+    }
+
+    /**
+     * Plugin deactivation hook callback.
+     */
+    public static function deactivate(): void {
+        // Will flush rewrite rules or clean up scheduled crons.
+    }
+
+    /**
+     * @var Container
+     */
+    private Container $container;
+
+    /**
      * Load all required dependencies.
      */
     private function load_dependencies(): void {
-        // Will initialize Container here in future milestones
+        $this->container = new Container();
+        $this->container->singleton( self::class, $this );
+        $this->container->singleton( Container::class, $this->container );
     }
 
     /**
