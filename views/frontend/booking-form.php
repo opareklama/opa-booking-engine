@@ -1,215 +1,201 @@
-<div class="opa-booking-container" style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: sans-serif;">
-    <h2 style="text-align: center; margin-bottom: 20px;">Book a Container</h2>
-    
-    <form id="opa-booking-form">
-        <!-- Step 1: Location -->
-        <div class="opa-step" id="step-1">
-            <h3>1. Where do you need the service?</h3>
-            <div style="margin-bottom: 15px;">
-                <label style="display:block; margin-bottom: 5px;">Select City</label>
-                <select id="opa_f_city" name="city_id" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                    <option value="">Select a city...</option>
-                </select>
+<?php
+if (!defined('ABSPATH')) exit;
+global $wpdb;
+$cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHERE status = 'active' ORDER BY name ASC");
+?>
+<div class="opa-app-container">
+    <div class="opa-app-main">
+        <form id="opa_booking_form" class="opa-modern-form">
+            
+            <!-- SECTION 1: LOCATION -->
+            <div class="opa-section is-active" id="sec-location">
+                <div class="opa-section-header">
+                    <div class="opa-sec-num">1</div>
+                    <h2 class="opa-sec-title">Service Location</h2>
+                </div>
+                <div class="opa-section-content">
+                    <div class="opa-address-wrapper">
+                        <label class="opa-label" style="font-size: 1rem; margin-bottom: 0.75rem;">Where do you need the service?</label>
+                        <div class="opa-inline-input-group">
+                            <div style="flex-grow: 1; position: relative; display: flex; align-items: center;">
+                                <svg width="20" height="20" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" style="position: absolute; left: 1rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <input type="text" id="opa_address_search" class="opa-input-pro" placeholder="Search your address..." autocomplete="off" style="padding-left: 2.75rem;">
+                                <div id="opa_autocomplete_results" class="opa-autocomplete-results"></div>
+                            </div>
+                            <select id="opa_city_select" class="opa-input-pro opa-city-dropdown">
+                                <option value="">Select City...</option>
+                                <?php foreach ( $cities as $city ) : ?>
+                                    <option value="<?php echo esc_attr( $city->id ); ?>"><?php echo esc_html( $city->name ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div id="opa_detected_city_wrapper" style="display:none; margin-top: 0.75rem;">
+                            <span class="opa-city-tag">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:0.25rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span id="opa_detected_city_name">Vilnius</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button type="button" class="opa-btn opa-next" data-next="step-2" style="padding: 10px 20px; background: #0073aa; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Next</button>
-        </div>
 
-        <!-- Step 2: Waste Type -->
-        <div class="opa-step" id="step-2" style="display: none;">
-            <h3>2. What type of waste?</h3>
-            <div style="margin-bottom: 15px;">
-                <select id="opa_f_waste" name="waste_type_id" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                    <option value="">Select waste type...</option>
-                </select>
+            <!-- SECTION 2: WASTE TYPE -->
+            <div class="opa-section" id="sec-waste">
+                <div class="opa-section-header">
+                    <div class="opa-sec-num">2</div>
+                    <h2 class="opa-sec-title">What are you disposing of?</h2>
+                </div>
+                <div class="opa-section-content">
+                    <div id="opa_waste_grid" class="opa-pill-grid">
+                        <div style="grid-column:1/-1; color:var(--opa-text-muted);">Please select a city first.</div>
+                    </div>
+                </div>
             </div>
-            <button type="button" class="opa-btn opa-prev" data-prev="step-1" style="padding: 10px 20px; background: #ccc; border: none; border-radius: 4px; cursor: pointer;">Back</button>
-            <button type="button" class="opa-btn opa-next" data-next="step-3" style="padding: 10px 20px; background: #0073aa; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Next</button>
-        </div>
 
-        <!-- Step 3: Container -->
-        <div class="opa-step" id="step-3" style="display: none;">
-            <h3>3. Choose Container Size</h3>
-            <div style="margin-bottom: 15px;">
-                <select id="opa_f_container" name="container_id" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                    <option value="">Select container...</option>
-                </select>
+            <!-- SECTION 3: CONTAINER -->
+            <div class="opa-section" id="sec-container">
+                <div class="opa-section-header">
+                    <div class="opa-sec-num">3</div>
+                    <h2 class="opa-sec-title">Choose container size</h2>
+                </div>
+                <div class="opa-section-content">
+                    <div id="opa_container_grid" class="opa-pill-grid">
+                        <div style="grid-column:1/-1; color:var(--opa-text-muted);">Please select a waste type first.</div>
+                    </div>
+                </div>
             </div>
-            <div id="opa_price_display" style="margin-bottom: 15px; font-weight: bold; color: #d63638; display:none;">
-                Total Price: $<span id="opa_total_price">0.00</span>
-            </div>
-            <button type="button" class="opa-btn opa-prev" data-prev="step-2" style="padding: 10px 20px; background: #ccc; border: none; border-radius: 4px; cursor: pointer;">Back</button>
-            <button type="button" class="opa-btn opa-next" data-next="step-4" style="padding: 10px 20px; background: #0073aa; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Next</button>
-        </div>
 
-        <!-- Step 4: Details & Submit -->
-        <div class="opa-step" id="step-4" style="display: none;">
-            <h3>4. Your Details</h3>
-            <div style="margin-bottom: 15px;">
-                <label>Date</label>
-                <input type="date" name="booking_date" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
-                
-                <label>Email</label>
-                <input type="email" name="customer_email" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
-                
-                <label>Phone</label>
-                <input type="text" name="customer_phone" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
-                
-                <label>Full Address</label>
-                <input type="text" name="address_line" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
-                
-                <!-- Honeypot -->
-                <input type="text" name="opa_website" style="display:none;" tabindex="-1" autocomplete="off">
-                <input type="hidden" name="idempotency_key" id="opa_idemp_key">
+            <!-- SECTION 4: CALENDAR -->
+            <div class="opa-section" id="sec-calendar">
+                <div class="opa-section-header">
+                    <div class="opa-sec-num">4</div>
+                    <h2 class="opa-sec-title">Delivery Date</h2>
+                </div>
+                <div class="opa-section-content">
+                    <div class="opa-calendar">
+                        <div class="opa-calendar-header">
+                            <button type="button" class="opa-calendar-btn" id="opa_cal_prev">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <h3 id="opa_cal_month" style="margin:0; font-size:1.125rem; font-weight:600;">Month Year</h3>
+                            <button type="button" class="opa-calendar-btn" id="opa_cal_next">
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                        <div class="opa-calendar-grid">
+                            <div class="opa-calendar-day-header">MON</div>
+                            <div class="opa-calendar-day-header">TUE</div>
+                            <div class="opa-calendar-day-header">WED</div>
+                            <div class="opa-calendar-day-header">THU</div>
+                            <div class="opa-calendar-day-header">FRI</div>
+                            <div class="opa-calendar-day-header">SAT</div>
+                            <div class="opa-calendar-day-header">SUN</div>
+                        </div>
+                        <div class="opa-calendar-grid" id="opa_cal_days">
+                            <!-- Days injected via JS -->
+                        </div>
+                    </div>
+                    <input type="hidden" id="opa_f_date" name="booking_date" required>
+                    <p id="opa_date_error" style="color: #ef4444; font-size: 0.875rem; margin-top: 1rem; display: none;">Please select an available date.</p>
+                </div>
             </div>
-            <button type="button" class="opa-btn opa-prev" data-prev="step-3" style="padding: 10px 20px; background: #ccc; border: none; border-radius: 4px; cursor: pointer;">Back</button>
-            <button type="submit" style="padding: 10px 20px; background: #46b450; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Confirm Booking</button>
+
+            <!-- SECTION 5: DETAILS -->
+            <div class="opa-section" id="sec-details">
+                <div class="opa-section-header">
+                    <div class="opa-sec-num">5</div>
+                    <h2 class="opa-sec-title">Final Details</h2>
+                </div>
+                <div class="opa-section-content">
+                    <div class="opa-input-grid">
+                        <div class="opa-input-group">
+                            <label class="opa-label">Full Name</label>
+                            <input type="text" name="customer_name" class="opa-input-pro" required>
+                        </div>
+                        <div class="opa-input-group">
+                            <label class="opa-label">Email Address</label>
+                            <input type="email" name="customer_email" class="opa-input-pro" required>
+                        </div>
+                        <div class="opa-input-group" style="grid-column: 1 / -1;">
+                            <label class="opa-label">Phone Number</label>
+                            <input type="text" name="customer_phone" class="opa-input-pro" required>
+                        </div>
+                        <div class="opa-input-group" style="grid-column: 1 / -1;">
+                            <label class="opa-label">Delivery Notes (Optional)</label>
+                            <textarea name="delivery_notes" class="opa-input-pro" rows="3" placeholder="Special instructions..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="opa-error-msg" style="display:none; padding: 1rem; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 8px; margin-top: 1.5rem;"></div>
+
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="opa-btn-submit" id="opa_btn_submit">
+                            Confirm Booking
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Honeypot & Idempotency -->
+                    <input type="text" name="opa_website" style="display:none;" tabindex="-1" autocomplete="off">
+                    <input type="hidden" name="idempotency_key" id="opa_idemp_key">
+                </div>
+            </div>
+            
+            <!-- SUCCESS STATE -->
+            <div class="opa-section" id="sec-success" style="display: none; text-align:center; padding: 4rem 2rem;">
+                <div style="width: 80px; height: 80px; background: #16a34a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+                    <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--opa-text);">Booking Confirmed!</h2>
+                <p style="color: var(--opa-text-muted); font-size: 1.125rem;">Order #<strong id="opa_final_booking_id" style="color: var(--opa-text);"></strong></p>
+                <div style="margin-top: 2rem;">
+                    <a href="#" id="opa_btn_download_invoice" target="_blank" class="opa-btn-submit" style="display:inline-flex; width:auto; padding: 1rem 2rem;">Download Invoice PDF</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Right Sidebar Preview -->
+    <div class="opa-app-sidebar">
+        <div class="opa-preview-panel">
+            <div class="opa-preview-img-wrapper">
+                <img id="opa_preview_img" src="" style="display:none;">
+                <button type="button" id="opa_preview_info_btn" title="More Info" style="display:none;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Details</span>
+                </button>
+                <div id="opa_preview_placeholder">
+                    <svg width="48" height="48" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span style="display:block; margin-top:0.5rem; color:#94a3b8; font-size:0.875rem;">Select a container</span>
+                </div>
+            </div>
+            <div class="opa-preview-details">
+                <h3 id="opa_preview_title">Order Summary</h3>
+                <div id="opa_preview_price" class="opa-preview-price">€0.00</div>
+                
+                <div class="opa-preview-list">
+                    <div class="opa-ps-row"><span>City:</span><strong id="sum_city">—</strong></div>
+                    <div class="opa-ps-row"><span>Waste:</span><strong id="sum_waste">—</strong></div>
+                    <div class="opa-ps-row"><span>Size:</span><strong id="sum_container">—</strong></div>
+                    <div class="opa-ps-row"><span>Date:</span><strong id="sum_date">—</strong></div>
+                </div>
+            </div>
         </div>
-        
-        <div id="opa-success-msg" style="display:none; padding: 20px; background: #d4edda; color: #155724; border-radius: 4px; margin-top:20px; text-align:center;">
-            Booking successful! Your ID is <span id="opa_final_booking_id"></span>.
-        </div>
-        <div id="opa-error-msg" style="display:none; padding: 20px; background: #f8d7da; color: #721c24; border-radius: 4px; margin-top:20px; text-align:center;">
-        </div>
-    </form>
+    </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
-    const nonce = '<?php echo wp_create_nonce('opa_frontend_nonce'); ?>';
-    
-    // Generate idempotency key
-    document.getElementById('opa_idemp_key').value = 'idemp_' + Math.random().toString(36).substr(2, 9);
-
-    // Initial load: Cities
-    fetch(ajaxurl + '?action=opa_front_get_cities')
-        .then(res => res.json())
-        .then(res => {
-            if(res.success) {
-                res.data.forEach(c => {
-                    document.getElementById('opa_f_city').innerHTML += `<option value="${c.id}">${c.name}</option>`;
-                });
-            }
-        });
-
-    // Step navigation
-    document.querySelectorAll('.opa-next').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const currentStep = this.closest('.opa-step');
-            
-            // Validation before proceeding
-            const selects = currentStep.querySelectorAll('select');
-            let valid = true;
-            selects.forEach(s => { if(!s.value) valid = false; });
-            if(!valid) { alert('Please make a selection.'); return; }
-
-            // Dynamic logic based on step
-            if(currentStep.id === 'step-1') {
-                const cityId = document.getElementById('opa_f_city').value;
-                fetch(ajaxurl + '?action=opa_front_get_waste&city_id=' + cityId)
-                    .then(res => res.json())
-                    .then(res => {
-                        const sel = document.getElementById('opa_f_waste');
-                        sel.innerHTML = '<option value="">Select waste type...</option>';
-                        if(res.success) {
-                            res.data.forEach(w => sel.innerHTML += `<option value="${w.id}">${w.title}</option>`);
-                        }
-                    });
-            }
-            if(currentStep.id === 'step-2') {
-                const cityId = document.getElementById('opa_f_city').value;
-                const wasteId = document.getElementById('opa_f_waste').value;
-                fetch(ajaxurl + '?action=opa_front_get_containers&city_id=' + cityId + '&waste_id=' + wasteId)
-                    .then(res => res.json())
-                    .then(res => {
-                        const sel = document.getElementById('opa_f_container');
-                        sel.innerHTML = '<option value="">Select container...</option>';
-                        if(res.success) {
-                            res.data.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.title} (${c.size})</option>`);
-                        }
-                    });
-            }
-
-            currentStep.style.display = 'none';
-            document.getElementById(this.dataset.next).style.display = 'block';
-        });
-    });
-
-    document.querySelectorAll('.opa-prev').forEach(btn => {
-        btn.addEventListener('click', function() {
-            this.closest('.opa-step').style.display = 'none';
-            document.getElementById(this.dataset.prev).style.display = 'block';
-        });
-    });
-
-    // Price calculation when container is selected
-    document.getElementById('opa_f_container').addEventListener('change', function() {
-        const cityId = document.getElementById('opa_f_city').value;
-        const wasteId = document.getElementById('opa_f_waste').value;
-        const containerId = this.value;
-        if(!containerId) return;
-
-        fetch(ajaxurl + '?action=opa_front_get_price&city_id=' + cityId + '&waste_id=' + wasteId + '&container_id=' + containerId)
-            .then(res => res.json())
-            .then(res => {
-                if(res.success) {
-                    document.getElementById('opa_total_price').innerText = res.data.price;
-                    document.getElementById('opa_price_display').style.display = 'block';
-                }
-            });
-    });
-
-    // Form Submission
-    document.getElementById('opa-booking-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const fd = new FormData(this);
-        fd.append('action', 'opa_front_submit_booking');
-        fd.append('_wpnonce', nonce);
-
-        const btn = this.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.innerText = 'Processing...';
-
-        fetch(ajaxurl, { method: 'POST', body: fd })
-        .then(res => res.json())
-        .then(res => {
-            if(res.success) {
-                document.querySelectorAll('.opa-step').forEach(el => el.style.display = 'none');
-                document.getElementById('opa_final_booking_id').innerText = res.data.booking_number;
-                
-                // Add Invoice Download Link dynamically
-                const invoiceUrl = window.location.href.split('?')[0] + '?opa_invoice=' + res.data.invoice_token;
-                const dlBtn = document.createElement('a');
-                dlBtn.href = invoiceUrl;
-                dlBtn.target = '_blank';
-                dlBtn.innerText = 'Download PDF Invoice';
-                dlBtn.style.display = 'inline-block';
-                dlBtn.style.marginTop = '15px';
-                dlBtn.style.padding = '8px 15px';
-                dlBtn.style.background = '#0073aa';
-                dlBtn.style.color = '#fff';
-                dlBtn.style.textDecoration = 'none';
-                dlBtn.style.borderRadius = '4px';
-                
-                const successMsg = document.getElementById('opa-success-msg');
-                successMsg.appendChild(document.createElement('br'));
-                successMsg.appendChild(dlBtn);
-                
-                successMsg.style.display = 'block';
-                document.getElementById('opa-error-msg').style.display = 'none';
-            } else {
-                document.getElementById('opa-error-msg').innerText = res.data;
-                document.getElementById('opa-error-msg').style.display = 'block';
-                btn.disabled = false;
-                btn.innerText = 'Confirm Booking';
-            }
-        }).catch(err => {
-            document.getElementById('opa-error-msg').innerText = "Network error occurred.";
-            document.getElementById('opa-error-msg').style.display = 'block';
-            btn.disabled = false;
-            btn.innerText = 'Confirm Booking';
-        });
-    });
-});
-</script>
+<!-- Slide-over Modal -->
+<div class="opa-modal-overlay" id="opa_slide_overlay"></div>
+<div class="opa-slide-over" id="opa_slide_panel">
+    <div class="opa-slide-over-header">
+        <h3 class="opa-slide-over-title" id="opa_slide_title">Details</h3>
+        <button class="opa-slide-over-close" id="opa_slide_close">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </div>
+    <div class="opa-slide-over-content">
+        <img src="" id="opa_slide_img" class="opa-slide-over-image opa-hidden">
+        <div id="opa_slide_desc" style="line-height: 1.6; color: var(--opa-text); font-size:1rem;"></div>
+    </div>
+</div>

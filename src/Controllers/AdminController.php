@@ -8,6 +8,11 @@ namespace OpaReklama\Booking\Controllers;
  */
 class AdminController {
 
+    public function __construct() {
+        add_action('admin_menu', [$this, 'register_menus']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+    }
+
     public function register_menus(): void {
         add_menu_page(
             __( 'Opa Booking Engine', 'opa-booking' ),
@@ -44,6 +49,33 @@ class AdminController {
             'manage_options',
             'opa-booking-settings',
             [ $this, 'render_settings' ]
+        );
+    }
+
+    public function enqueue_assets(string $hook): void {
+        // Only load on our plugin's pages
+        if ( strpos( $hook, 'opa-booking' ) === false ) {
+            return;
+        }
+
+        // Native WP Media Uploader
+        wp_enqueue_media();
+
+        // Design System CSS
+        wp_enqueue_style(
+            'opa-admin-design-system',
+            plugin_dir_url( dirname(__DIR__) ) . 'assets/admin/css/admin-design-system.css',
+            [],
+            '1.0.0'
+        );
+
+        // Design System JS
+        wp_enqueue_script(
+            'opa-admin-design-system',
+            plugin_dir_url( dirname(__DIR__) ) . 'assets/admin/js/admin-design-system.js',
+            [],
+            '1.0.0',
+            true
         );
     }
 

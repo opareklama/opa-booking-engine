@@ -76,3 +76,16 @@ register_deactivation_hook( __FILE__, [ Application::class, 'deactivate' ] );
 
 // Bootstrap the Application
 Application::boot();
+
+// Initialize GitHub Update Checker
+require_once __DIR__ . '/vendor/plugin-update-checker/plugin-update-checker.php';
+$myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+	'https://github.com/opareklama/opa-booking-engine',
+	__FILE__,
+	'opa-booking-engine'
+);
+// Optional: If it's a private repository, you need to set the authentication token.
+if (defined('OPA_GITHUB_TOKEN')) {
+    $myUpdateChecker->setAuthentication(OPA_GITHUB_TOKEN);
+}
+

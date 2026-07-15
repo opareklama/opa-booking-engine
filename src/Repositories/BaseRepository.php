@@ -30,10 +30,15 @@ abstract class BaseRepository {
      * Find a record by ID.
      *
      * @param int $id
+     * @param bool $include_archived Whether to include archived records
      * @return object|null
      */
-    public function find( int $id ): ?object {
-        $sql = $this->db->prepare( "SELECT * FROM {$this->table} WHERE id = %d", $id );
+    public function find( int $id, bool $include_archived = false ): ?object {
+        if ($include_archived) {
+            $sql = $this->db->prepare( "SELECT * FROM {$this->table} WHERE id = %d", $id );
+        } else {
+            $sql = $this->db->prepare( "SELECT * FROM {$this->table} WHERE id = %d AND status != 'archived'", $id );
+        }
         $result = $this->db->get_row( $sql );
         return $result ? clone $result : null;
     }
@@ -41,10 +46,14 @@ abstract class BaseRepository {
     /**
      * Get all records.
      *
+     * @param bool $include_archived Whether to include archived records
      * @return array
      */
-    public function all(): array {
-        return $this->db->get_results( "SELECT * FROM {$this->table}" );
+    public function all( bool $include_archived = false ): array {
+        if ($include_archived) {
+            return $this->db->get_results( "SELECT * FROM {$this->table}" );
+        }
+        return $this->db->get_results( "SELECT * FROM {$this->table} WHERE status != 'archived'" );
     }
 
     /**
@@ -81,17 +90,39 @@ abstract class BaseRepository {
     }
 
     /**
-     * Delete a record. Note: Hard deletes should generally be avoided per business rules,
-     * but this method exists for exceptional cases.
+     * Delete a record (Soft Delete).
      *
      * @param int $id
      * @return bool
      * @throws DatabaseException
      */
     public function delete( int $id ): bool {
+        $user_id = get_current_user_id();
+        $data = [
+            'status' => 'archived',
+            'archived_at' => current_time('mysql', true), // UTC time
+            'archived_by' => $user_id ?: null
+        ];
+        $format = ['%s', '%s', '%d'];
+
+        $updated = $this->db->update( $this->table, $data, ['id' => $id], $format, ['%d'] );
+        if ( false === $updated ) {
+            throw new DatabaseException( "Failed to archive record ID {$id} in {$this->table}." );
+        }
+        return true;
+    }
+
+    /**
+     * Hard Delete a record (Danger: only use for cleanup).
+     *
+     * @param int $id
+     * @return bool
+     * @throws DatabaseException
+     */
+    public function force_delete( int $id ): bool {
         $deleted = $this->db->delete( $this->table, ['id' => $id], ['%d'] );
         if ( false === $deleted ) {
-            throw new DatabaseException( "Failed to delete record ID {$id} in {$this->table}." );
+            throw new DatabaseException( "Failed to force delete record ID {$id} in {$this->table}." );
         }
         return true;
     }
