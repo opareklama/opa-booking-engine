@@ -19,6 +19,7 @@ class InvoiceService {
         
         $snapshot = [
             "company_name" => get_option("opa_company_name", "Opa Reklama"),
+            "company_logo" => get_option("opa_company_logo", ""),
             "company_address" => get_option("opa_company_address", ""),
             "vat_number" => get_option("opa_vat_number", "")
         ];

@@ -18,8 +18,7 @@
             <h1><?php echo esc_html($company_name); ?></h1>
         </div>
         <div class="content">
-            <p>Hello,</p>
-            <p><?php echo nl2br(esc_html($email_body_text)); ?></p>
+            <p><?php echo nl2br(esc_html($body_text)); ?></p>
             
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                 <tr>
@@ -32,7 +31,7 @@
                 </tr>
                 <tr>
                     <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Total Price:</strong></td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$<?php echo number_format((float)$booking->total_price, 2); ?></td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;"><?php echo esc_html(get_option('opa_currency_symbol', '$')); ?><?php echo number_format((float)$booking->total_price, 2); ?></td>
                 </tr>
             </table>
 
