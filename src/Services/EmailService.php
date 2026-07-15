@@ -4,18 +4,34 @@ declare(strict_types=1);
 namespace OpaReklama\Booking\Services;
 
 class EmailService {
-    public function send_booking_confirmation( int $booking_id, string $customer_email ): bool {
+    public function send_customer_confirmation( object $booking, string $invoice_token ): bool {
         try {
-            // Decoupled Email Logic
-            $subject = "Your Booking Confirmation";
-            $message = "Thank you for your booking. ID: " . $booking_id;
-            $headers = ["Content-Type: text/html; charset=UTF-8"];
+            $to = $booking->customer_email;
+            $company_name = get_option('opa_company_name', 'Opa Reklama');
+            $subject = 'Your Booking Confirmation - ' . $company_name;
             
-            // In WP, wp_mail is used. It returns bool.
-            return wp_mail( $customer_email, $subject, $message, $headers );
+            $invoice_link = get_site_url() . '?opa_invoice=' . $invoice_token;
+            
+            ob_start();
+            require OPA_BOOKING_PLUGIN_DIR . 'views/emails/customer-confirmation.php';
+            $body = ob_get_clean();
+            
+            $headers = ['Content-Type: text/html; charset=UTF-8'];
+            
+            // Send to Customer
+            $sent_customer = wp_mail( $to, $subject, $body, $headers );
+            
+            // Notify Admin
+            $admin_email = get_option('opa_admin_email', get_option('admin_email'));
+            if ($admin_email) {
+                $admin_subject = 'New Booking Received - ' . $booking->booking_number;
+                $admin_body = "A new booking has been placed.<br><br>Booking ID: {$booking->booking_number}<br>Customer: {$booking->customer_email}<br><a href='{$invoice_link}'>View Invoice</a>";
+                wp_mail( $admin_email, $admin_subject, $admin_body, $headers );
+            }
+            
+            return $sent_customer;
         } catch ( \Exception $e ) {
-            // Log failure but DO NOT crash the booking transaction
-            error_log( "Email failed for booking {$booking_id}: " . $e->getMessage() );
+            error_log( "Email failed for booking {$booking->id}: " . $e->getMessage() );
             return false;
         }
     }

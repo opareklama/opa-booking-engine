@@ -316,6 +316,10 @@ class AjaxController {
             $invoice_id = $invoice_service->generate_invoice( $booking_id, (float) $booking_data->total_price );
             $invoice_record = $invoice_repo->find( $invoice_id );
             
+            // Dispatch Email
+            $email_service = new \OpaReklama\Booking\Services\EmailService();
+            $email_service->send_customer_confirmation( $booking_data, $invoice_record->invoice_token );
+            
             wp_send_json_success( [
                 'booking_number' => $booking_data->booking_number,
                 'invoice_token' => $invoice_record->invoice_token
