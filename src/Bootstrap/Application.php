@@ -71,6 +71,7 @@ class Application {
      * Register all of the hooks related to the public-facing functionality.
      */
     private function define_public_hooks(): void {
-        // e.g. add_shortcode( 'opa_booking_engine', ... )
+        $frontend_controller = $this->container->get( \OpaReklama\Booking\Controllers\FrontendController::class );
+        add_action( 'init', [ $frontend_controller, 'register_shortcodes' ] );
     }
 }
