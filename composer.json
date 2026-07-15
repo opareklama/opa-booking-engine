@@ -1,0 +1,26 @@
+{
+    "name": "opareklama/opa-booking-engine",
+    "description": "Enterprise-grade Booking Engine for Opa Reklama",
+    "type": "wordpress-plugin",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Opa Reklama",
+            "email": "support@opareklama.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "OpaReklama\\Booking\\": "src/"
+        }
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7",
+        "wp-coding-standards/wpcs": "^3.0",
+        "phpstan/phpstan": "^1.10"
+    },
+    "scripts": {
+        "lint": "phpcs --standard=phpcs.xml.dist",
+        "analyze": "phpstan analyse src/"
+    }
+}
