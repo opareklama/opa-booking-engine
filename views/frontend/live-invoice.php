@@ -66,6 +66,14 @@
 
         <div class="footer">
             <p>Thank you for your business!</p>
+            
+            <?php if ( ! isset($_GET['format']) || $_GET['format'] !== 'pdf' ): ?>
+                <div style="margin-top: 30px;">
+                    <a href="<?php echo esc_url(add_query_arg('format', 'pdf')); ?>" style="display:inline-block; padding: 10px 20px; background: #0073aa; color: #fff; text-decoration: none; border-radius: 4px; font-family: sans-serif;">
+                        Download PDF
+                    </a>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </body>

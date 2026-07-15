@@ -12,6 +12,7 @@ class FrontendController {
     public function handle_invoice_download(): void {
         if ( isset( $_GET['opa_invoice'] ) && ! empty( $_GET['opa_invoice'] ) ) {
             $token = sanitize_text_field( $_GET['opa_invoice'] );
+            $format = isset( $_GET['format'] ) ? sanitize_text_field( $_GET['format'] ) : 'html';
             
             global $wpdb;
             $invoice = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}opa_invoices WHERE invoice_token = %s", $token ) );
@@ -24,20 +25,22 @@ class FrontendController {
                 require OPA_BOOKING_PLUGIN_DIR . "views/frontend/live-invoice.php";
                 $html = ob_get_clean();
                 
-                $pdf_provider = new \OpaReklama\Booking\Providers\DomPdfProvider();
-                // Since we want to output directly to browser, we can temporarily modify DomPdfProvider or just use it inline here for direct output.
-                // Wait, our DomPdfProvider saves to a file. Let's modify it to stream.
-                // For now, I will use DOMPDF directly here to stream to browser.
-                
-                $options = new \Dompdf\Options();
-                $options->set('defaultFont', 'Courier');
-                $dompdf = new \Dompdf\Dompdf($options);
-                $dompdf->loadHtml($html);
-                $dompdf->setPaper('A4', 'portrait');
-                $dompdf->render();
-                
-                $dompdf->stream("invoice-{$invoice->invoice_number}.pdf", ["Attachment" => false]);
-                exit;
+                if ( $format === 'pdf' ) {
+                    $options = new \Dompdf\Options();
+                    $options->set('defaultFont', 'Courier');
+                    $dompdf = new \Dompdf\Dompdf($options);
+                    $dompdf->loadHtml($html);
+                    $dompdf->setPaper('A4', 'portrait');
+                    $dompdf->render();
+                    
+                    // Attachment => true forces download
+                    $dompdf->stream("invoice-{$invoice->invoice_number}.pdf", ["Attachment" => true]);
+                    exit;
+                } else {
+                    // Show HTML Preview
+                    echo $html;
+                    exit;
+                }
             } else {
                 wp_die("Invoice not found or invalid token.");
             }
