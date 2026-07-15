@@ -4,5 +4,5 @@ declare(strict_types=1);
 namespace OpaReklama\Booking\Interfaces;
 
 interface PdfGeneratorInterface {
-    public function generate_pdf_from_html( string $html ): string;
+    public function generate(string $html, string $output_path): bool;
 }

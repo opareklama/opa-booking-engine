@@ -27,5 +27,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "require": {
+        "dompdf/dompdf": "^3.1"
     }
 }

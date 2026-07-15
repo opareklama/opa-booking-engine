@@ -177,7 +177,26 @@ document.addEventListener('DOMContentLoaded', function() {
             if(res.success) {
                 document.querySelectorAll('.opa-step').forEach(el => el.style.display = 'none');
                 document.getElementById('opa_final_booking_id').innerText = res.data.booking_number;
-                document.getElementById('opa-success-msg').style.display = 'block';
+                
+                // Add Invoice Download Link dynamically
+                const invoiceUrl = window.location.href.split('?')[0] + '?opa_invoice=' + res.data.invoice_token;
+                const dlBtn = document.createElement('a');
+                dlBtn.href = invoiceUrl;
+                dlBtn.target = '_blank';
+                dlBtn.innerText = 'Download PDF Invoice';
+                dlBtn.style.display = 'inline-block';
+                dlBtn.style.marginTop = '15px';
+                dlBtn.style.padding = '8px 15px';
+                dlBtn.style.background = '#0073aa';
+                dlBtn.style.color = '#fff';
+                dlBtn.style.textDecoration = 'none';
+                dlBtn.style.borderRadius = '4px';
+                
+                const successMsg = document.getElementById('opa-success-msg');
+                successMsg.appendChild(document.createElement('br'));
+                successMsg.appendChild(dlBtn);
+                
+                successMsg.style.display = 'block';
                 document.getElementById('opa-error-msg').style.display = 'none';
             } else {
                 document.getElementById('opa-error-msg').innerText = res.data;

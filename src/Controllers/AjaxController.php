@@ -313,9 +313,13 @@ class AjaxController {
             $invoice_service = new \OpaReklama\Booking\Services\InvoiceService( $invoice_repo );
             $booking_data = $repo->find( $booking_id );
             
-            $invoice_service->generate_invoice( $booking_id, (float) $booking_data->total_price );
+            $invoice_id = $invoice_service->generate_invoice( $booking_id, (float) $booking_data->total_price );
+            $invoice_record = $invoice_repo->find( $invoice_id );
             
-            wp_send_json_success( ['booking_number' => $booking_data->booking_number] );
+            wp_send_json_success( [
+                'booking_number' => $booking_data->booking_number,
+                'invoice_token' => $invoice_record->invoice_token
+            ] );
             
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
