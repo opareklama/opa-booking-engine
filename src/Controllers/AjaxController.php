@@ -27,6 +27,9 @@ class AjaxController {
 
         add_action( 'wp_ajax_opa_add_container', [ $this, 'ajax_add_container' ] );
         add_action( 'wp_ajax_opa_get_containers', [ $this, 'ajax_get_containers' ] );
+
+        add_action( 'wp_ajax_opa_add_pricing_rule', [ $this, 'ajax_add_pricing_rule' ] );
+        add_action( 'wp_ajax_opa_get_pricing_rules', [ $this, 'ajax_get_pricing_rules' ] );
     }
 
     public function ajax_add_city(): void {
@@ -136,6 +139,60 @@ class AjaxController {
             $repo = new \OpaReklama\Booking\Repositories\ContainerRepository();
             $id = $repo->insert(['title' => $title, 'size' => $size, 'status' => 'active'], ['%s', '%s', '%s']);
             wp_send_json_success([ 'id' => $id, 'title' => $title, 'size' => $size, 'status' => 'active' ]);
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+    // --- Pricing Rules (Service Rules) ---
+
+    public function ajax_get_pricing_rules(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            
+            global $wpdb;
+            $sql = "SELECT r.id, c.name as city, w.title as waste_type, cont.title as container, r.base_price, r.status 
+                    FROM {$wpdb->prefix}opa_service_rules r
+                    JOIN {$wpdb->prefix}opa_cities c ON r.city_id = c.id
+                    JOIN {$wpdb->prefix}opa_waste_types w ON r.waste_type_id = w.id
+                    JOIN {$wpdb->prefix}opa_containers cont ON r.container_id = cont.id
+                    ORDER BY r.id DESC";
+            
+            $rules = $wpdb->get_results( $sql );
+            wp_send_json_success( $rules );
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+
+    public function ajax_add_pricing_rule(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            
+            $city_id = (int) ( $_POST['city_id'] ?? 0 );
+            $waste_type_id = (int) ( $_POST['waste_type_id'] ?? 0 );
+            $container_id = (int) ( $_POST['container_id'] ?? 0 );
+            $base_price = (float) ( $_POST['base_price'] ?? 0.0 );
+            
+            if ( ! $city_id || ! $waste_type_id || ! $container_id || ! $base_price ) {
+                wp_send_json_error( 'All fields are required.' );
+            }
+            
+            $repo = new \OpaReklama\Booking\Repositories\ServiceRuleRepository();
+            $id = $repo->insert([
+                'city_id' => $city_id,
+                'waste_type_id' => $waste_type_id,
+                'container_id' => $container_id,
+                'base_price' => $base_price,
+                'status' => 'active'
+            ], ['%d', '%d', '%d', '%f', '%s']);
+            
+            wp_send_json_success( ['id' => $id] );
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
         }
