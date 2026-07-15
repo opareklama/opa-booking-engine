@@ -31,6 +31,10 @@ class AjaxController {
         add_action( 'wp_ajax_opa_add_pricing_rule', [ $this, 'ajax_add_pricing_rule' ] );
         add_action( 'wp_ajax_opa_get_pricing_rules', [ $this, 'ajax_get_pricing_rules' ] );
 
+        // Bookings Management
+        add_action( 'wp_ajax_opa_get_bookings', [ $this, 'ajax_get_bookings' ] );
+        add_action( 'wp_ajax_opa_update_booking_status', [ $this, 'ajax_update_booking_status' ] );
+
         // Frontend Hooks
         add_action( 'wp_ajax_nopriv_opa_front_get_cities', [ $this, 'ajax_front_get_cities' ] );
         add_action( 'wp_ajax_opa_front_get_cities', [ $this, 'ajax_front_get_cities' ] );
@@ -313,6 +317,52 @@ class AjaxController {
             
             wp_send_json_success( ['booking_number' => $booking_data->booking_number] );
             
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+
+    // --- Admin Bookings Management ---
+
+    public function ajax_get_bookings(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            
+            global $wpdb;
+            $sql = "SELECT b.*, c.name as city, w.title as waste_type, cont.title as container
+                    FROM {$wpdb->prefix}opa_bookings b
+                    JOIN {$wpdb->prefix}opa_cities c ON b.city_id = c.id
+                    JOIN {$wpdb->prefix}opa_waste_types w ON b.waste_type_id = w.id
+                    JOIN {$wpdb->prefix}opa_containers cont ON b.container_id = cont.id
+                    ORDER BY b.id DESC";
+            
+            wp_send_json_success( $wpdb->get_results( $sql ) );
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+
+    public function ajax_update_booking_status(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            
+            $booking_id = (int) ( $_POST['booking_id'] ?? 0 );
+            $status = sanitize_text_field( $_POST['status'] ?? '' );
+            
+            if ( ! $booking_id || ! $status ) {
+                wp_send_json_error( 'Invalid parameters.' );
+            }
+            
+            $repo = new \OpaReklama\Booking\Repositories\BookingRepository();
+            $repo->update( $booking_id, ['status' => $status], ['%s'] );
+            
+            wp_send_json_success( 'Status updated.' );
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
         }
