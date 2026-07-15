@@ -63,7 +63,8 @@ class Application {
      * Register all of the hooks related to the admin area functionality.
      */
     private function define_admin_hooks(): void {
-        // e.g. add_action( 'admin_menu', ... )
+        $admin_controller = $this->container->get( \OpaReklama\Booking\Controllers\AdminController::class );
+        add_action( 'admin_menu', [ $admin_controller, 'register_menus' ] );
     }
 
     /**
