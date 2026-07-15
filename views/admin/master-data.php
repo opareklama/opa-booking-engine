@@ -2,13 +2,18 @@
     <h1>Master Data Management</h1>
     <p>Manage Cities, Waste Types, and Containers here.</p>
     
-    <div style="display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap;">
+    <h2 class="nav-tab-wrapper" style="margin-top: 20px;">
+        <a href="#tab-cities" class="nav-tab nav-tab-active" onclick="opaSwitchDataTab(event, 'tab-cities')">Cities</a>
+        <a href="#tab-waste" class="nav-tab" onclick="opaSwitchDataTab(event, 'tab-waste')">Waste Types</a>
+        <a href="#tab-containers" class="nav-tab" onclick="opaSwitchDataTab(event, 'tab-containers')">Containers</a>
+    </h2>
+
+    <div style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; border-top: none; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
         <!-- Cities Section -->
-        <div style="flex: 1; min-width: 300px; background: #fff; padding: 20px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
-            <h2>Cities</h2>
-            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <div id="tab-cities" class="opa-data-tab-content">
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; max-width: 500px;">
                 <input type="text" id="opa_city_name" placeholder="Enter city name" style="flex: 1;">
-                <button type="button" class="button button-primary" id="opa_btn_add_city">Add</button>
+                <button type="button" class="button button-primary" id="opa_btn_add_city">Add City</button>
             </div>
             <table class="wp-list-table widefat fixed striped" id="opa_cities_table">
                 <thead><tr><th>ID</th><th>Name</th><th>Status</th></tr></thead>
@@ -17,11 +22,10 @@
         </div>
 
         <!-- Waste Types Section -->
-        <div style="flex: 1; min-width: 300px; background: #fff; padding: 20px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
-            <h2>Waste Types</h2>
-            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <div id="tab-waste" class="opa-data-tab-content" style="display:none;">
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; max-width: 500px;">
                 <input type="text" id="opa_waste_title" placeholder="Waste Type (e.g. Green Waste)" style="flex: 1;">
-                <button type="button" class="button button-primary" id="opa_btn_add_waste">Add</button>
+                <button type="button" class="button button-primary" id="opa_btn_add_waste">Add Waste Type</button>
             </div>
             <table class="wp-list-table widefat fixed striped" id="opa_waste_table">
                 <thead><tr><th>ID</th><th>Title</th><th>Status</th></tr></thead>
@@ -30,12 +34,11 @@
         </div>
 
         <!-- Containers Section -->
-        <div style="flex: 1; min-width: 300px; background: #fff; padding: 20px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
-            <h2>Containers</h2>
-            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <div id="tab-containers" class="opa-data-tab-content" style="display:none;">
+            <div style="margin-bottom: 15px; display: flex; gap: 10px; max-width: 500px;">
                 <input type="text" id="opa_container_title" placeholder="Title (e.g. Small Bin)" style="flex: 1;">
-                <input type="text" id="opa_container_size" placeholder="Size (e.g. 5m3)" style="width: 80px;">
-                <button type="button" class="button button-primary" id="opa_btn_add_container">Add</button>
+                <input type="text" id="opa_container_size" placeholder="Size (e.g. 5m3)" style="width: 100px;">
+                <button type="button" class="button button-primary" id="opa_btn_add_container">Add Container</button>
             </div>
             <table class="wp-list-table widefat fixed striped" id="opa_container_table">
                 <thead><tr><th>ID</th><th>Title</th><th>Size</th><th>Status</th></tr></thead>
@@ -44,6 +47,20 @@
         </div>
     </div>
 </div>
+
+<script>
+function opaSwitchDataTab(evt, tabId) {
+    evt.preventDefault();
+    document.querySelectorAll('.opa-data-tab-content').forEach(function(el) {
+        el.style.display = 'none';
+    });
+    document.querySelectorAll('.nav-tab').forEach(function(el) {
+        el.classList.remove('nav-tab-active');
+    });
+    document.getElementById(tabId).style.display = 'block';
+    evt.currentTarget.classList.add('nav-tab-active');
+}
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
