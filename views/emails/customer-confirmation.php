@@ -19,7 +19,7 @@
         </div>
         <div class="content">
             <p>Hello,</p>
-            <p>Thank you for booking with us! Your booking has been successfully received.</p>
+            <p><?php echo nl2br(esc_html($email_body_text)); ?></p>
             
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                 <tr>
