@@ -24,6 +24,7 @@ class Application {
         $this->load_dependencies();
         $this->define_admin_hooks();
         $this->define_public_hooks();
+        $this->define_ajax_hooks();
     }
 
     /**
@@ -73,5 +74,13 @@ class Application {
     private function define_public_hooks(): void {
         $frontend_controller = $this->container->get( \OpaReklama\Booking\Controllers\FrontendController::class );
         add_action( 'init', [ $frontend_controller, 'register_shortcodes' ] );
+    }
+
+    /**
+     * Register all AJAX hooks.
+     */
+    private function define_ajax_hooks(): void {
+        $ajax_controller = $this->container->get( \OpaReklama\Booking\Controllers\AjaxController::class );
+        $ajax_controller->register_hooks();
     }
 }
