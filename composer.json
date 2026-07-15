@@ -22,5 +22,10 @@
     "scripts": {
         "lint": "phpcs --standard=phpcs.xml.dist",
         "analyze": "phpstan analyse src/"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
