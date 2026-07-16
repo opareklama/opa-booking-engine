@@ -94,12 +94,12 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                         <div class="opa-calendar-grid" id="opa_cal_days">
                             <!-- Days injected via JS -->
                         </div>
-                        <div class="opa-calendar-footer" id="opa_cal_footer" style="display: none; align-items: center; justify-content: flex-start; border-top: 1px solid #e2e8f0; margin-top: 1rem; padding-top: 1rem; flex-wrap: wrap; gap: 1rem; width: 100%; box-sizing: border-box;">
+                        <div class="opa-calendar-footer" id="opa_cal_footer" style="display: none; align-items: center; justify-content: flex-start; margin-top: 1.5rem; flex-wrap: wrap; gap: 2rem; width: 100%; box-sizing: border-box;">
                             <div class="opa-cal-price-box" style="background: #22c55e; color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; text-align: center; min-width: 140px; box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);">
                                 <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 0.25rem;" id="opa_cal_price_label">Kaina be PVM:</div>
                                 <div style="font-size: 1.25rem; font-weight: 700; line-height: 1;" id="opa_cal_price_val">--</div>
                             </div>
-                            <div class="opa-cal-legend" style="display: flex; gap: 1rem; font-size: 0.85rem; color: #64748b; flex-wrap: wrap; align-items: center; margin-left: auto; max-width: 100%;">
+                            <div class="opa-cal-legend" style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: #64748b; flex-wrap: wrap; align-items: center;">
                                 <div style="display: flex; align-items: center; gap: 0.4rem;">
                                     <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #22c55e;"></div>
                                     <span style="white-space: nowrap;">Yra laisvų konteinerių</span>
@@ -126,11 +126,11 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                     <div style="margin-bottom: 1.5rem; display: flex; gap: 1.5rem; font-weight: 500; color: #475569;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                             <input type="radio" name="customer_type" value="natural" checked style="width:18px;height:18px;accent-color:#16a34a;">
-                            Fizinis asmuo (Natural person)
+                            Fizinis asmuo
                         </label>
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                             <input type="radio" name="customer_type" value="legal" style="width:18px;height:18px;accent-color:#16a34a;">
-                            Juridinis asmuo (Legal entity)
+                            Juridinis asmuo
                         </label>
                     </div>
 
