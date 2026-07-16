@@ -422,6 +422,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Calendar
     function initCalendar() {
+        if (opaBookingObj.availability_rules && opaBookingObj.availability_rules.min_date) {
+            const minD = new Date(opaBookingObj.availability_rules.min_date);
+            if (minD > calDate) {
+                calDate = minD;
+            }
+        }
         els.btnPrevMonth.onclick = () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); };
         els.btnNextMonth.onclick = () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); };
         renderCalendar();
@@ -449,10 +455,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const priceStr = state.price > 0 ? `€${parseFloat(state.price).toFixed(2)}` : '';
         const today = new Date();
         today.setHours(0,0,0,0);
+        
+        const rules = opaBookingObj.availability_rules || {};
 
         for (let i = 1; i <= lastDay; i++) {
             const d = new Date(year, month, i);
             const ymd = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+            const dayOfWeek = d.getDay();
+            
+            // Validation Priority
+            let isAvailable = true;
+            let reason = '';
+            
+            if (d < today) {
+                isAvailable = false;
+                reason = opaBookingObj.i18n.past_date || 'Cannot book in the past.';
+            } else if (rules.min_date && ymd < rules.min_date) {
+                isAvailable = false;
+                reason = `Booking requires at least ${rules.min_advance_days || 1} days notice.`;
+            } else if (rules.max_date && ymd > rules.max_date) {
+                isAvailable = false;
+                reason = `Cannot book more than ${rules.max_advance_days || 365} days in advance.`;
+            } else if (rules.closed_weekdays && rules.closed_weekdays.includes(dayOfWeek)) {
+                isAvailable = false;
+                const dayNames = ['Sundays', 'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays'];
+                reason = `Closed on ${dayNames[dayOfWeek]}.`;
+            } else if (rules.custom_blocked_dates && rules.custom_blocked_dates.includes(ymd)) {
+                isAvailable = false;
+                reason = 'Date unavailable.';
+            } else if (rules.public_holidays && rules.public_holidays.includes(ymd)) {
+                isAvailable = false;
+                reason = 'Public Holiday.';
+            } else if (state.blockedDates && state.blockedDates.includes(ymd)) {
+                isAvailable = false;
+                reason = opaBookingObj.i18n.fully_booked || 'Fully booked';
+            }
 
             const div = document.createElement('div');
             div.className = 'opa-calendar-day';
@@ -462,9 +499,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="opa-calendar-day-price">${priceStr}</div>
             `;
             
-            if (d < today || state.blockedDates.includes(ymd)) {
+            if (!isAvailable) {
                 div.classList.add('is-disabled');
-                if(state.blockedDates.includes(ymd)) div.title = opaBookingObj.i18n.fully_booked;
+                div.title = reason;
             } else {
                 if (state.date === ymd) div.classList.add('is-selected');
                 

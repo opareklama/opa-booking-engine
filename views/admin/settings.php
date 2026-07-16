@@ -24,6 +24,38 @@
         update_option( 'opa_admin_subject', sanitize_text_field( $_POST['admin_subject'] ?? 'New Booking Received' ) );
         update_option( 'opa_admin_body', wp_kses_post( $_POST['admin_body'] ?? '' ) );
         
+        // Booking Rules (SettingsService)
+        if (class_exists('\\OpaReklama\\Booking\\Services\\SettingsService')) {
+            $settings_service = '\\OpaReklama\\Booking\\Services\\SettingsService';
+            
+            $settings_service::set('opa_min_advance_days', absint($_POST['min_advance_days'] ?? 1));
+            $settings_service::set('opa_max_advance_days', absint($_POST['max_advance_days'] ?? 365));
+            
+            $closed_weekdays = isset($_POST['closed_weekdays']) && is_array($_POST['closed_weekdays']) ? array_map('absint', $_POST['closed_weekdays']) : [];
+            $settings_service::set('opa_closed_weekdays', $closed_weekdays);
+            
+            // Helper to parse dates
+            $parse_dates = function($input) {
+                $lines = explode("\n", $input);
+                $dates = [];
+                foreach ($lines as $line) {
+                    $line = trim($line);
+                    if (empty($line)) continue;
+                    // Validate YYYY-MM-DD
+                    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $line)) {
+                        $dates[] = $line;
+                    }
+                }
+                return array_unique($dates);
+            };
+            
+            $custom_blocked_dates = $parse_dates($_POST['custom_blocked_dates'] ?? '');
+            $settings_service::set('opa_custom_blocked_dates', $custom_blocked_dates);
+            
+            $public_holidays = $parse_dates($_POST['public_holidays'] ?? '');
+            $settings_service::set('opa_public_holidays', $public_holidays);
+        }
+
         echo '<div class="updated notice"><p>Settings saved successfully.</p></div>';
     }
     
@@ -45,10 +77,27 @@
     $admin_email = get_option( 'opa_admin_email', get_option('admin_email') );
     $admin_subject = get_option( 'opa_admin_subject', 'New Booking Alert: #{booking_id}' );
     $admin_body = get_option( 'opa_admin_body', "A new booking has just been submitted.\n\nPlease check the dashboard or view the invoice." );
+    
+    // Load Booking Rules
+    $min_advance_days = 1;
+    $max_advance_days = 365;
+    $closed_weekdays = [];
+    $custom_blocked_dates = [];
+    $public_holidays = [];
+    
+    if (class_exists('\\OpaReklama\\Booking\\Services\\SettingsService')) {
+        $settings_service = '\\OpaReklama\\Booking\\Services\\SettingsService';
+        $min_advance_days = (int) $settings_service::get('opa_min_advance_days', 1);
+        $max_advance_days = (int) $settings_service::get('opa_max_advance_days', 365);
+        $closed_weekdays = (array) $settings_service::get('opa_closed_weekdays', []);
+        $custom_blocked_dates = (array) $settings_service::get('opa_custom_blocked_dates', []);
+        $public_holidays = (array) $settings_service::get('opa_public_holidays', []);
+    }
     ?>
     
     <h2 class="nav-tab-wrapper" style="margin-top: 20px;">
         <a href="#tab-general" class="nav-tab nav-tab-active" onclick="opaSwitchTab(event, 'tab-general')">General Settings</a>
+        <a href="#tab-rules" class="nav-tab" onclick="opaSwitchTab(event, 'tab-rules')">Booking Rules</a>
         <a href="#tab-invoice" class="nav-tab" onclick="opaSwitchTab(event, 'tab-invoice')">Invoice Settings</a>
         <a href="#tab-email" class="nav-tab" onclick="opaSwitchTab(event, 'tab-email')">Email Settings</a>
     </h2>
@@ -80,6 +129,54 @@
                         <td>
                             <textarea name="terms_html" id="terms_html" class="large-text" rows="3"><?php echo esc_textarea( $terms_html ); ?></textarea>
                             <br><small>HTML allowed (e.g. <code>&lt;a href="..."&gt;Sutinku...&lt;/a&gt;</code>). This will appear next to a required checkbox before submission.</small>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="tab-rules" class="opa-tab-content" style="display: none;">
+                <h2>Availability Engine</h2>
+                <table class="form-table">
+                    <tr>
+                        <th scope="row"><label for="min_advance_days">Min Advance Booking Days</label></th>
+                        <td>
+                            <input name="min_advance_days" type="number" id="min_advance_days" value="<?php echo esc_attr( $min_advance_days ); ?>" class="small-text" min="0">
+                            <br><small>Minimum number of days before a booking can be made.</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="max_advance_days">Max Advance Booking Days</label></th>
+                        <td>
+                            <input name="max_advance_days" type="number" id="max_advance_days" value="<?php echo esc_attr( $max_advance_days ); ?>" class="small-text" min="1">
+                            <br><small>Maximum number of days in the future a booking can be made.</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label>Weekly Closed Days</label></th>
+                        <td>
+                            <?php 
+                            $weekdays = [1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday', 0 => 'Sunday'];
+                            foreach ($weekdays as $day_num => $day_name): 
+                                $checked = in_array($day_num, $closed_weekdays) ? 'checked' : '';
+                            ?>
+                                <label style="display: block; margin-bottom: 5px;">
+                                    <input type="checkbox" name="closed_weekdays[]" value="<?php echo esc_attr($day_num); ?>" <?php echo $checked; ?>> <?php echo esc_html($day_name); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="custom_blocked_dates">Custom Blocked Dates</label></th>
+                        <td>
+                            <textarea name="custom_blocked_dates" id="custom_blocked_dates" class="large-text" rows="5" placeholder="YYYY-MM-DD"><?php echo esc_textarea( implode("\n", $custom_blocked_dates) ); ?></textarea>
+                            <br><small>Enter one date per line in YYYY-MM-DD format. These dates will be disabled.</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="public_holidays">Public Holidays</label></th>
+                        <td>
+                            <textarea name="public_holidays" id="public_holidays" class="large-text" rows="5" placeholder="YYYY-MM-DD"><?php echo esc_textarea( implode("\n", $public_holidays) ); ?></textarea>
+                            <br><small>Enter one date per line in YYYY-MM-DD format. These will be marked as Public Holidays.</small>
                         </td>
                     </tr>
                 </table>

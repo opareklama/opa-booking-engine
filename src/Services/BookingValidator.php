@@ -54,6 +54,12 @@ class BookingValidator {
         if ( ! $date || $date->format( 'Y-m-d' ) !== $payload['booking_date'] ) {
             throw new ValidationException( "Invalid booking date format. Expected YYYY-MM-DD.", "ERR_INVALID_DATE" );
         }
+        
+        $availability = \OpaReklama\Booking\Services\AvailabilityEngine::isDateAvailable($payload['booking_date']);
+        if (!$availability['available']) {
+            throw new ValidationException( $availability['reason'], "ERR_DATE_UNAVAILABLE" );
+        }
+        
         $validated['booking_date'] = $payload['booking_date'];
 
         // Email validation
