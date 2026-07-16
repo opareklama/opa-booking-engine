@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>Sąskaita faktūra <?php echo esc_html($invoice->invoice_number); ?></title>
     <style>
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 13px; color: #334155; margin: 0; padding: 0; background: #ffffff; }
-        .invoice-box { padding: 40px; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 13px; color: #334155; margin: 0; padding: 0; background: <?php echo (isset($_GET['format']) && $_GET['format'] === 'pdf') ? '#ffffff' : '#f8fafc'; ?>; }
+        .invoice-box { padding: 40px; <?php if (!isset($_GET['format']) || $_GET['format'] !== 'pdf'): ?> max-width: 800px; margin: 40px auto; background: #ffffff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-radius: 8px; <?php endif; ?> }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 0; vertical-align: top; }
         
@@ -63,6 +63,9 @@
             $base_price = (float) $invoice->subtotal;
             $tax_amount = (float) $invoice->tax_total;
             $grand_total = (float) $invoice->grand_total;
+            
+            // Calculate actual tax rate used for this invoice
+            $actual_tax_rate = $base_price > 0 ? round(($tax_amount / $base_price) * 100) : 0;
         ?>
         
         <table class="header-table">
@@ -126,13 +129,13 @@
         </table>
 
         <table class="totals-table">
-            <?php if ($tax_rate > 0): ?>
+            <?php if ($tax_amount > 0 || $actual_tax_rate > 0): ?>
             <tr>
                 <td class="total-label">Tarpinė suma:</td>
                 <td class="total-value"><?php echo esc_html($currency) . number_format($base_price, 2); ?></td>
             </tr>
             <tr>
-                <td class="total-label">PVM (<?php echo esc_html($tax_rate); ?>%):</td>
+                <td class="total-label">PVM (<?php echo esc_html($actual_tax_rate); ?>%):</td>
                 <td class="total-value"><?php echo esc_html($currency) . number_format($tax_amount, 2); ?></td>
             </tr>
             <?php endif; ?>
