@@ -11,7 +11,7 @@ class DomPdfProvider implements PdfGeneratorInterface {
     public function generate(string $html, string $output_path): bool {
         try {
             $options = new Options();
-            $options->set('defaultFont', 'Courier');
+            $options->set('defaultFont', 'DejaVu Sans');
             $options->set('isRemoteEnabled', true); // For external images if any
             
             $dompdf = new Dompdf($options);

@@ -47,7 +47,7 @@ class FrontendController {
                 
                 if ( $format === 'pdf' ) {
                     $options = new \Dompdf\Options();
-                    $options->set('defaultFont', 'Courier');
+                    $options->set('defaultFont', 'DejaVu Sans');
                     $dompdf = new \Dompdf\Dompdf($options);
                     $dompdf->loadHtml($html);
                     $dompdf->setPaper('A4', 'portrait');
