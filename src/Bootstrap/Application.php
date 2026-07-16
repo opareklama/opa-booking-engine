@@ -68,12 +68,12 @@ class Application {
         add_action( 'admin_menu', [ $admin_controller, 'register_menus' ] );
     }
 
-    /**
-     * Register all of the hooks related to the public-facing functionality.
-     */
     private function define_public_hooks(): void {
         $frontend_controller = $this->container->get( \OpaReklama\Booking\Controllers\FrontendController::class );
         add_action( 'init', [ $frontend_controller, 'register_shortcodes' ] );
+        add_action( 'init', function() {
+            load_plugin_textdomain( 'opa-booking', false, dirname( plugin_basename( OPA_BOOKING_PLUGIN_DIR . 'opa-booking.php' ) ) . '/languages' );
+        } );
     }
 
     /**

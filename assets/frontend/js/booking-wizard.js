@@ -430,7 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('city_id', state.city);
         formData.append('waste_type_id', state.waste.id);
         formData.append('container_id', state.container.id);
-        formData.append('address_line', els.citySelect.options[els.citySelect.selectedIndex].text);
         
         fetch(ajaxurl, { method: 'POST', body: formData })
             .then(r => r.json())

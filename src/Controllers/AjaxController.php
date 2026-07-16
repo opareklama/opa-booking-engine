@@ -36,6 +36,8 @@ class AjaxController {
         // Bookings Management
         add_action( 'wp_ajax_opa_get_bookings', [ $this, 'ajax_get_bookings' ] );
         add_action( 'wp_ajax_opa_update_booking_status', [ $this, 'ajax_update_booking_status' ] );
+        add_action( 'wp_ajax_opa_get_dashboard_kpi', [ $this, 'ajax_get_dashboard_kpi' ] );
+        add_action( 'wp_ajax_opa_bulk_action_bookings', [ $this, 'ajax_bulk_action_bookings' ] );
 
         // Frontend Hooks
         add_action( 'wp_ajax_nopriv_opa_front_get_cities', [ $this, 'ajax_front_get_cities' ] );
@@ -614,6 +616,42 @@ class AjaxController {
 
     // --- Admin Bookings Management ---
 
+        public function ajax_get_dashboard_kpi(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            
+            global $wpdb;
+            $tbl_bookings = $wpdb->prefix . 'opa_bookings';
+            $tbl_invoices = $wpdb->prefix . 'opa_invoices';
+            
+            $today = current_time('Y-m-d');
+            
+            // Today's Bookings
+            $today_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $tbl_bookings WHERE booking_date = %s", $today ) );
+            
+            // Pending
+            $pending_count = (int) $wpdb->get_var( "SELECT COUNT(id) FROM $tbl_bookings WHERE status = 'pending'" );
+            
+            // Revenue (Confirmed or Completed)
+            $revenue = (float) $wpdb->get_var( "SELECT SUM(total_price) FROM $tbl_bookings WHERE status IN ('confirmed', 'completed')" );
+            
+            // Invoices
+            $invoices_count = (int) $wpdb->get_var( "SELECT COUNT(id) FROM $tbl_invoices" );
+            
+            wp_send_json_success([
+                'today' => $today_count,
+                'pending' => $pending_count,
+                'revenue' => number_format($revenue, 2),
+                'invoices' => $invoices_count
+            ]);
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+
     public function ajax_get_bookings(): void {
         try {
             $this->security->verify_nonce( 'opa_admin_nonce' );
@@ -622,14 +660,39 @@ class AjaxController {
             }
             
             global $wpdb;
-            $sql = "SELECT b.*, c.name as city, w.title as waste_type, cont.title as container
+            
+            $where = ["b.status != 'archived'"];
+            $params = [];
+            
+            if ( ! empty( $_GET['search'] ) ) {
+                $search = '%' . $wpdb->esc_like( $_GET['search'] ) . '%';
+                $where[] = "(b.booking_number LIKE %s OR b.customer_email LIKE %s OR b.customer_phone LIKE %s)";
+                $params[] = $search;
+                $params[] = $search;
+                $params[] = $search;
+            }
+            if ( ! empty( $_GET['status'] ) ) {
+                $where[] = "b.status = %s";
+                $params[] = $_GET['status'];
+            }
+            if ( ! empty( $_GET['date'] ) ) {
+                $where[] = "b.booking_date = %s";
+                $params[] = $_GET['date'];
+            }
+            
+            $where_sql = implode( ' AND ', $where );
+            
+            $sql = "SELECT b.*, c.name as city, w.title as waste_type, cont.title as container, i.invoice_token, i.invoice_number
                     FROM {$wpdb->prefix}opa_bookings b
                     JOIN {$wpdb->prefix}opa_cities c ON b.city_id = c.id
                     JOIN {$wpdb->prefix}opa_waste_types w ON b.waste_type_id = w.id
                     JOIN {$wpdb->prefix}opa_containers cont ON b.container_id = cont.id
+                    LEFT JOIN {$wpdb->prefix}opa_invoices i ON b.id = i.booking_id
+                    WHERE $where_sql
                     ORDER BY b.id DESC";
             
-            wp_send_json_success( $wpdb->get_results( $sql ) );
+            $results = empty($params) ? $wpdb->get_results( $sql ) : $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );
+            wp_send_json_success( $results );
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
         }
@@ -653,6 +716,41 @@ class AjaxController {
             $repo->update( $booking_id, ['status' => $status], ['%s'] );
             
             wp_send_json_success( 'Status updated.' );
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+
+    public function ajax_bulk_action_bookings(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            
+            $booking_ids = isset( $_POST['booking_ids'] ) ? array_map( 'intval', (array) $_POST['booking_ids'] ) : [];
+            $action = sanitize_text_field( $_POST['bulk_action'] ?? '' );
+            
+            if ( empty( $booking_ids ) || empty( $action ) ) {
+                wp_send_json_error( 'No bookings selected or action is invalid.' );
+            }
+            
+            $repo = new \OpaReklama\Booking\Repositories\BookingRepository();
+            $count = 0;
+            
+            foreach ( $booking_ids as $id ) {
+                if ( $action === 'delete' ) {
+                    // Soft delete
+                    $repo->delete( $id );
+                    $count++;
+                } else if ( str_starts_with( $action, 'status_' ) ) {
+                    $status = str_replace( 'status_', '', $action );
+                    $repo->update( $id, ['status' => $status], ['%s'] );
+                    $count++;
+                }
+            }
+            
+            wp_send_json_success( "Successfully applied action to {$count} bookings." );
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
         }

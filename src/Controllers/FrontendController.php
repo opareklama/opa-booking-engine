@@ -7,11 +7,13 @@ class FrontendController {
     public function register_shortcodes(): void {
         add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
         add_shortcode( "opa_booking_engine", [ $this, "render_booking_form" ] );
-        add_action( 'init', [ $this, 'handle_invoice_download' ] );
+        
+        // This is already running on 'init', so just execute it directly
+        $this->handle_invoice_download();
     }
 
     public function register_assets(): void {
-        wp_register_style(
+        wp_enqueue_style(
             'opa-booking-wizard',
             OPA_BOOKING_PLUGIN_URL . 'assets/frontend/css/booking-wizard.css',
             [],

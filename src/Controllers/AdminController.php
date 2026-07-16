@@ -26,6 +26,15 @@ class AdminController {
 
         add_submenu_page(
             'opa-booking',
+            __( 'Dashboard', 'opa-booking' ),
+            __( 'Dashboard', 'opa-booking' ),
+            'manage_options',
+            'opa-booking',
+            [ $this, 'render_dashboard' ]
+        );
+
+        add_submenu_page(
+            'opa-booking',
             __( 'Master Data', 'opa-booking' ),
             __( 'Master Data', 'opa-booking' ),
             'manage_options',

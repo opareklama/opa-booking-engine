@@ -11,19 +11,19 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
             <div class="opa-section is-active" id="sec-location">
                 <div class="opa-section-header">
                     <div class="opa-sec-num">1</div>
-                    <h2 class="opa-sec-title">Service Location</h2>
+                    <h2 class="opa-sec-title"><?php esc_html_e('Service Location', 'opa-booking'); ?></h2>
                 </div>
                 <div class="opa-section-content">
                     <div class="opa-address-wrapper">
-                        <label class="opa-label" style="font-size: 1rem; margin-bottom: 0.75rem;">Where do you need the service?</label>
+                        <label class="opa-label" style="font-size: 1rem; margin-bottom: 0.75rem;"><?php esc_html_e('Search your location to check availability', 'opa-booking'); ?></label>
                         <div class="opa-inline-input-group">
                             <div style="flex-grow: 1; position: relative; display: flex; align-items: center;">
                                 <svg width="20" height="20" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" style="position: absolute; left: 1rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                <input type="text" id="opa_address_search" class="opa-input-pro" placeholder="Search your address..." autocomplete="off" style="padding-left: 2.75rem;">
+                                <input type="text" id="opa_address_search" class="opa-input-pro" placeholder="Enter city or area..." autocomplete="off" style="padding-left: 2.75rem;">
                                 <div id="opa_autocomplete_results" class="opa-autocomplete-results"></div>
                             </div>
                             <select id="opa_city_select" class="opa-input-pro opa-city-dropdown">
-                                <option value="">Select City...</option>
+                                <option value=""><?php esc_html_e('Select City...', 'opa-booking'); ?></option>
                                 <?php foreach ( $cities as $city ) : ?>
                                     <option value="<?php echo esc_attr( $city->id ); ?>"><?php echo esc_html( $city->name ); ?></option>
                                 <?php endforeach; ?>
@@ -43,11 +43,11 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
             <div class="opa-section" id="sec-waste">
                 <div class="opa-section-header">
                     <div class="opa-sec-num">2</div>
-                    <h2 class="opa-sec-title">What are you disposing of?</h2>
+                    <h2 class="opa-sec-title"><?php esc_html_e('What are you disposing of?', 'opa-booking'); ?></h2>
                 </div>
                 <div class="opa-section-content">
                     <div id="opa_waste_grid" class="opa-pill-grid">
-                        <div style="grid-column:1/-1; color:var(--opa-text-muted);">Please select a city first.</div>
+                        <div style="grid-column:1/-1; color:var(--opa-text-muted);"><?php esc_html_e('Please select a city first.', 'opa-booking'); ?></div>
                     </div>
                 </div>
             </div>
@@ -56,11 +56,11 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
             <div class="opa-section" id="sec-container">
                 <div class="opa-section-header">
                     <div class="opa-sec-num">3</div>
-                    <h2 class="opa-sec-title">Choose container size</h2>
+                    <h2 class="opa-sec-title"><?php esc_html_e('Choose container size', 'opa-booking'); ?></h2>
                 </div>
                 <div class="opa-section-content">
                     <div id="opa_container_grid" class="opa-pill-grid">
-                        <div style="grid-column:1/-1; color:var(--opa-text-muted);">Please select a waste type first.</div>
+                        <div style="grid-column:1/-1; color:var(--opa-text-muted);"><?php esc_html_e('Please select a waste type first.', 'opa-booking'); ?></div>
                     </div>
                 </div>
             </div>
@@ -69,7 +69,7 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
             <div class="opa-section" id="sec-calendar">
                 <div class="opa-section-header">
                     <div class="opa-sec-num">4</div>
-                    <h2 class="opa-sec-title">Delivery Date</h2>
+                    <h2 class="opa-sec-title"><?php esc_html_e('Delivery Date', 'opa-booking'); ?></h2>
                 </div>
                 <div class="opa-section-content">
                     <div class="opa-calendar">
@@ -104,7 +104,7 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
             <div class="opa-section" id="sec-details">
                 <div class="opa-section-header">
                     <div class="opa-sec-num">5</div>
-                    <h2 class="opa-sec-title">Final Details</h2>
+                    <h2 class="opa-sec-title"><?php esc_html_e('Final Details', 'opa-booking'); ?></h2>
                 </div>
                 <div class="opa-section-content">
                     <div class="opa-input-grid">
@@ -115,6 +115,10 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                         <div class="opa-input-group">
                             <label class="opa-label">Email Address</label>
                             <input type="email" name="customer_email" class="opa-input-pro" required>
+                        </div>
+                        <div class="opa-input-group" style="grid-column: 1 / -1;">
+                            <label class="opa-label">Full Service Address</label>
+                            <input type="text" name="address_line" class="opa-input-pro" placeholder="e.g. 123 Main St, Apartment 4B, City" required>
                         </div>
                         <div class="opa-input-group" style="grid-column: 1 / -1;">
                             <label class="opa-label">Phone Number</label>
@@ -130,7 +134,7 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
 
                     <div style="margin-top: 2rem;">
                         <button type="submit" class="opa-btn-submit" id="opa_btn_submit">
-                            Confirm Booking
+                            <?php esc_html_e('Confirm Booking', 'opa-booking'); ?>
                             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
                     </div>
@@ -146,10 +150,10 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                 <div style="width: 80px; height: 80px; background: #16a34a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
                     <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--opa-text);">Booking Confirmed!</h2>
-                <p style="color: var(--opa-text-muted); font-size: 1.125rem;">Order #<strong id="opa_final_booking_id" style="color: var(--opa-text);"></strong></p>
+                <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--opa-text);"><?php esc_html_e('Booking Confirmed!', 'opa-booking'); ?></h2>
+                <p style="color: var(--opa-text-muted); font-size: 1.125rem;"><?php esc_html_e('Order #', 'opa-booking'); ?><strong id="opa_final_booking_id" style="color: var(--opa-text);"></strong></p>
                 <div style="margin-top: 2rem;">
-                    <a href="#" id="opa_btn_download_invoice" target="_blank" class="opa-btn-submit" style="display:inline-flex; width:auto; padding: 1rem 2rem;">Download Invoice PDF</a>
+                    <a href="#" id="opa_btn_download_invoice" target="_blank" class="opa-btn-submit" style="display:inline-flex; width:auto; padding: 1rem 2rem;"><?php esc_html_e('Download Invoice PDF', 'opa-booking'); ?></a>
                 </div>
             </div>
 
@@ -171,7 +175,7 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                 </div>
             </div>
             <div class="opa-preview-details">
-                <h3 id="opa_preview_title">Order Summary</h3>
+                <h3 id="opa_preview_title"><?php esc_html_e('Order Summary', 'opa-booking'); ?></h3>
                 <div id="opa_preview_price" class="opa-preview-price">€0.00</div>
                 
                 <div class="opa-preview-list">
@@ -189,7 +193,7 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
 <div class="opa-modal-overlay" id="opa_slide_overlay"></div>
 <div class="opa-slide-over" id="opa_slide_panel">
     <div class="opa-slide-over-header">
-        <h3 class="opa-slide-over-title" id="opa_slide_title">Details</h3>
+        <h3 class="opa-slide-over-title" id="opa_slide_title"><?php esc_html_e('Details', 'opa-booking'); ?></h3>
         <button class="opa-slide-over-close" id="opa_slide_close">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>

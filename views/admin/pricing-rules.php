@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     loadDropdown('opa_get_cities', ['filter_city', 'field_rule_city'], 'name');
     loadDropdown('opa_get_waste_types', ['filter_waste', 'field_rule_waste'], 'title');
-    loadDropdown('opa_get_containers', ['filter_container', 'field_rule_container'], 'title');
+    loadDropdown('opa_get_containers', ['filter_container', 'field_rule_container'], 'name');
 
     window.resetFilters = () => {
         document.getElementById('filter_search').value = '';

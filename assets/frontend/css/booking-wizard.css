@@ -35,11 +35,13 @@
 }
 
 /* Typography */
-.opa-sec-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0;
-    color: var(--opa-text);
+.opa-app-container h2.opa-sec-title {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    color: var(--opa-primary) !important;
+    line-height: 1.3 !important;
+    letter-spacing: -0.01em !important;
 }
 
 /* Sections */
@@ -50,20 +52,21 @@
 .opa-section-header {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.875rem;
     margin-bottom: 1.5rem;
 }
-.opa-sec-num {
-    width: 32px;
-    height: 32px;
-    background: var(--opa-text);
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.875rem;
+.opa-app-container .opa-sec-num {
+    width: 28px !important;
+    height: 28px !important;
+    background: var(--opa-primary) !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    flex-shrink: 0 !important;
 }
 .opa-section-content {
     padding-left: 3rem;
