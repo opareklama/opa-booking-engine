@@ -580,7 +580,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(res.data.invoice_url) {
                         const dl = document.getElementById('opa_btn_download_invoice');
                         dl.href = res.data.invoice_url;
-                        dl.download = `Invoice_${res.data.booking_number}.pdf`;
                     }
                 } else {
                     btn.disabled = false;

@@ -225,8 +225,8 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
 
                 <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                     <a href="#" id="opa_btn_download_invoice" target="_blank" class="opa-btn-submit" style="display:inline-flex; align-items: center; justify-content: center; width:auto; padding: 0.75rem 1.5rem; background: var(--opa-primary); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; gap: 0.5rem; border: none;">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        <?php esc_html_e('Atsisiųsti Sąskaitą PDF', 'opa-booking'); ?>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <?php esc_html_e('Peržiūrėti Sąskaitą', 'opa-booking'); ?>
                     </a>
                     <a href="<?php echo esc_url( home_url() ); ?>" class="opa-btn-submit" style="display:inline-flex; align-items: center; justify-content: center; width:auto; padding: 0.75rem 1.5rem; background: #f1f5f9; color: #475569; text-decoration: none; border-radius: 8px; font-weight: 600; border: none;">
                         <?php esc_html_e('Grįžti į Pradžią', 'opa-booking'); ?>
