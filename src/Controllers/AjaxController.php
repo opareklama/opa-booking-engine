@@ -213,7 +213,17 @@ class AjaxController {
                 wp_send_json_error( 'Unauthorized' );
             }
             $repo = new \OpaReklama\Booking\Repositories\ContainerRepository();
-            wp_send_json_success( $repo->all() );
+            $results = $repo->all();
+            
+            foreach ($results as $row) {
+                if ($row->featured_image_id) {
+                    $row->featured_image_url = wp_get_attachment_url($row->featured_image_id);
+                } else {
+                    $row->featured_image_url = null;
+                }
+            }
+            
+            wp_send_json_success( $results );
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
         }
@@ -387,13 +397,21 @@ class AjaxController {
             // Check for duplicates
             global $wpdb;
             $table = $wpdb->prefix . 'opa_service_rules';
-            $duplicate_check = $wpdb->get_var( $wpdb->prepare(
-                "SELECT id FROM $table WHERE city_id = %d AND waste_type_id = %d AND container_id = %d AND id != %d",
+            $existing_rule = $wpdb->get_row( $wpdb->prepare(
+                "SELECT id, status FROM $table WHERE city_id = %d AND waste_type_id = %d AND container_id = %d AND id != %d",
                 $city_id, $waste_type_id, $container_id, $id
             ) );
 
-            if ( $duplicate_check ) {
-                wp_send_json_error( 'A pricing rule for this combination already exists.' );
+            if ( $existing_rule ) {
+                if ( $existing_rule->status !== 'archived' ) {
+                    wp_send_json_error( 'A pricing rule for this combination already exists.' );
+                } else {
+                    if ( $id === 0 ) {
+                        $id = (int) $existing_rule->id;
+                    } else {
+                        $repo->force_delete( (int) $existing_rule->id );
+                    }
+                }
             }
 
             $data = [
