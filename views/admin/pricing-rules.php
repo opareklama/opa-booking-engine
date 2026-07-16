@@ -14,6 +14,18 @@
     <!-- Filters & Search -->
     <div class="opa-card" style="margin-bottom: 24px; padding: 16px;">
         <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+            <div style="display: flex; gap: 8px; align-items: center; border-right: 1px solid var(--opa-border); padding-right: 16px; margin-right: 16px;">
+                <select id="bulk_action_select" class="opa-select" style="min-width: 140px;">
+                    <option value="">Bulk Actions</option>
+                    <option value="edit">Edit</option>
+                    <option value="active">Mark Active</option>
+                    <option value="inactive">Mark Inactive</option>
+                    <option value="archive">Archive</option>
+                    <option value="delete">Delete</option>
+                </select>
+                <button class="opa-btn opa-btn-secondary" onclick="window.applyBulkAction()">Apply</button>
+            </div>
+            
             <div style="flex: 1; min-width: 200px;">
                 <input type="text" id="filter_search" class="opa-input" placeholder="Search rules..." onkeyup="if(event.key === 'Enter') window.loadRules()">
             </div>
@@ -50,6 +62,7 @@
             <table class="opa-table" id="opa-table-rules">
                 <thead>
                     <tr>
+                        <th style="width: 40px; text-align: center;"><input type="checkbox" id="check_all_rules" onchange="window.toggleAllRules(this)"></th>
                         <th>ID</th>
                         <th>City</th>
                         <th>Waste Type</th>
@@ -133,6 +146,50 @@
     </div>
 </div>
 
+<!-- Slide-over: Bulk Edit -->
+<div id="slideover-bulk-edit" class="opa-slide-over">
+    <div class="opa-slide-over-header">
+        <h2 class="opa-slide-over-title">Bulk Edit Rules</h2>
+        <button class="opa-slide-over-close" onclick="OpaSlideOver.close('slideover-bulk-edit')">✕</button>
+    </div>
+    <div class="opa-slide-over-content">
+        <form id="form-bulk-edit">
+            <p style="margin-bottom: 15px; color: #64748b; font-size: 13px;">Leave a field empty if you do not want to change it.</p>
+            <input type="hidden" name="rule_ids" id="field_bulk_ids" value="">
+            
+            <div class="opa-form-group">
+                <label class="opa-label">Change City To</label>
+                <select name="city_id" id="field_bulk_city" class="opa-select">
+                    <option value="">-- No Change --</option>
+                </select>
+            </div>
+            
+            <div class="opa-form-group">
+                <label class="opa-label">Change Waste Type To</label>
+                <select name="waste_type_id" id="field_bulk_waste" class="opa-select">
+                    <option value="">-- No Change --</option>
+                </select>
+            </div>
+            
+            <div class="opa-form-group">
+                <label class="opa-label">Change Container To</label>
+                <select name="container_id" id="field_bulk_container" class="opa-select">
+                    <option value="">-- No Change --</option>
+                </select>
+            </div>
+
+            <div class="opa-form-group">
+                <label class="opa-label">Change Base Price ($) To</label>
+                <input type="number" step="0.01" name="base_price" id="field_bulk_price" class="opa-input" placeholder="-- No Change --">
+            </div>
+        </form>
+    </div>
+    <div class="opa-slide-over-footer">
+        <button class="opa-btn opa-btn-secondary" onclick="OpaSlideOver.close('slideover-bulk-edit')">Cancel</button>
+        <button class="opa-btn opa-btn-primary" onclick="window.saveBulkEdit()">Update Rules</button>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
@@ -158,9 +215,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    loadDropdown('opa_get_cities', ['filter_city', 'field_rule_city'], 'name');
-    loadDropdown('opa_get_waste_types', ['filter_waste', 'field_rule_waste'], 'title');
-    loadDropdown('opa_get_containers', ['filter_container', 'field_rule_container'], 'name');
+    loadDropdown('opa_get_cities', ['filter_city', 'field_rule_city', 'field_bulk_city'], 'name');
+    loadDropdown('opa_get_waste_types', ['filter_waste', 'field_rule_waste', 'field_bulk_waste'], 'title');
+    loadDropdown('opa_get_containers', ['filter_container', 'field_rule_container', 'field_bulk_container'], 'name');
 
     window.resetFilters = () => {
         document.getElementById('filter_search').value = '';
@@ -193,6 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         return `<tr>
+            <td style="text-align: center;"><input type="checkbox" class="rule-checkbox" value="${rule.id}"></td>
             <td>${rule.id}</td>
             <td style="font-weight: 500;">${rule.city_name}</td>
             <td>${rule.waste_name}</td>
@@ -229,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => res.json())
             .then(res => {
                 const tbody = document.querySelector('#opa-table-rules tbody');
+                document.getElementById('check_all_rules').checked = false;
                 tbody.innerHTML = '';
                 
                 if(res.success && res.data.data.length > 0) {
@@ -357,6 +416,73 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+    };
+
+    window.toggleAllRules = (el) => {
+        document.querySelectorAll('.rule-checkbox').forEach(c => c.checked = el.checked);
+    };
+
+    window.applyBulkAction = () => {
+        const action = document.getElementById('bulk_action_select').value;
+        const checkboxes = document.querySelectorAll('.rule-checkbox:checked');
+        if(checkboxes.length === 0) {
+            OpaToast.show('Please select at least one rule.', 'error');
+            return;
+        }
+        
+        const ids = Array.from(checkboxes).map(c => c.value);
+        
+        if(action === 'edit') {
+            document.getElementById('form-bulk-edit').reset();
+            document.getElementById('field_bulk_ids').value = ids.join(',');
+            OpaSlideOver.open('slideover-bulk-edit');
+            return;
+        }
+        
+        if(!action) return;
+        
+        let msg = 'Are you sure you want to apply this action to the selected rules?';
+        if(action === 'delete') msg = 'Are you sure you want to PERMANENTLY delete the selected rules?';
+        
+        if(confirm(msg)) {
+            const fd = new FormData();
+            fd.append('action', 'opa_bulk_action_pricing_rules');
+            fd.append('_wpnonce', nonce);
+            fd.append('bulk_action', action);
+            ids.forEach(id => fd.append('rule_ids[]', id));
+            
+            fetch(ajaxurl, { method: 'POST', body: fd })
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    OpaToast.show(res.data, 'success');
+                    document.getElementById('bulk_action_select').value = '';
+                    window.loadRules(window.opaCurrentPage);
+                } else {
+                    OpaToast.show(res.data, 'error');
+                }
+            });
+        }
+    };
+
+    window.saveBulkEdit = () => {
+        const form = document.getElementById('form-bulk-edit');
+        const fd = new FormData(form);
+        fd.append('action', 'opa_bulk_edit_pricing_rules');
+        fd.append('_wpnonce', nonce);
+        
+        fetch(ajaxurl, { method: 'POST', body: fd })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                OpaToast.show(res.data, 'success');
+                OpaSlideOver.close('slideover-bulk-edit');
+                document.getElementById('bulk_action_select').value = '';
+                window.loadRules(window.opaCurrentPage);
+            } else {
+                OpaToast.show(res.data, 'error');
+            }
+        });
     };
 });
 </script>

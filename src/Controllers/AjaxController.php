@@ -32,6 +32,8 @@ class AjaxController {
         add_action( 'wp_ajax_opa_get_pricing_rules', [ $this, 'ajax_get_pricing_rules' ] );
         add_action( 'wp_ajax_opa_archive_pricing_rule', [ $this, 'ajax_archive_pricing_rule' ] );
         add_action( 'wp_ajax_opa_delete_pricing_rule', [ $this, 'ajax_delete_pricing_rule' ] );
+        add_action( 'wp_ajax_opa_bulk_action_pricing_rules', [ $this, 'ajax_bulk_action_pricing_rules' ] );
+        add_action( 'wp_ajax_opa_bulk_edit_pricing_rules', [ $this, 'ajax_bulk_edit_pricing_rules' ] );
 
         // Bookings Management
         add_action( 'wp_ajax_opa_get_bookings', [ $this, 'ajax_get_bookings' ] );
@@ -455,6 +457,67 @@ class AjaxController {
             $logger->log('master_data', 'archive', 'PricingRule', $id, "Archived Rule ID: $id");
 
             wp_send_json_success('Rule archived successfully.');
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+
+    public function ajax_bulk_action_pricing_rules(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            $action = sanitize_text_field( $_POST['bulk_action'] ?? '' );
+            $ids = isset( $_POST['rule_ids'] ) ? array_map('intval', (array) $_POST['rule_ids']) : [];
+            if (empty($action) || empty($ids)) {
+                wp_send_json_error('Invalid input');
+            }
+            
+            $repo = new \OpaReklama\Booking\Repositories\ServiceRuleRepository();
+            $count = 0;
+            foreach ($ids as $id) {
+                if ($action === 'delete') {
+                    $repo->force_delete($id);
+                    $count++;
+                } elseif ($action === 'archive') {
+                    $repo->delete($id); // soft delete
+                    $count++;
+                } elseif (in_array($action, ['active', 'inactive'])) {
+                    $repo->update($id, ['status' => $action]);
+                    $count++;
+                }
+            }
+            wp_send_json_success(sprintf('%d rules updated successfully.', $count));
+        } catch ( \Exception $e ) {
+            wp_send_json_error( $e->getMessage() );
+        }
+    }
+
+    public function ajax_bulk_edit_pricing_rules(): void {
+        try {
+            $this->security->verify_nonce( 'opa_admin_nonce' );
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( 'Unauthorized' );
+            }
+            $ids = isset( $_POST['rule_ids'] ) ? array_map('intval', explode(',', $_POST['rule_ids'])) : [];
+            if (empty($ids)) wp_send_json_error('No rules selected');
+            
+            $data = [];
+            if (!empty($_POST['city_id'])) $data['city_id'] = (int) $_POST['city_id'];
+            if (!empty($_POST['waste_type_id'])) $data['waste_type_id'] = (int) $_POST['waste_type_id'];
+            if (!empty($_POST['container_id'])) $data['container_id'] = (int) $_POST['container_id'];
+            if (!empty($_POST['base_price'])) $data['base_price'] = (float) $_POST['base_price'];
+            
+            if (empty($data)) wp_send_json_error('No changes requested');
+            
+            $repo = new \OpaReklama\Booking\Repositories\ServiceRuleRepository();
+            $count = 0;
+            foreach ($ids as $id) {
+                $repo->update($id, $data);
+                $count++;
+            }
+            wp_send_json_success(sprintf('%d rules updated successfully.', $count));
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
         }
