@@ -437,6 +437,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(res.success) {
                     document.getElementById('opa_final_booking_id').innerText = res.data.booking_number;
                     
+                    // Populate informative details
+                    document.getElementById('opa_final_date').innerText = new Date(state.date).toLocaleDateString();
+                    document.getElementById('opa_final_price').innerText = `€${parseFloat(state.price).toFixed(2)}`;
+                    document.getElementById('opa_final_service').innerText = `${state.container.title} (${state.waste.title})`;
+                    document.getElementById('opa_final_address').innerText = formData.get('address_line');
+                    
                     // Hide all sections except success
                     document.querySelectorAll('.opa-section').forEach(s => s.style.display = 'none');
                     document.querySelector('.opa-app-sidebar').style.display = 'none';

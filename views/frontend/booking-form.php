@@ -146,14 +146,47 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
             </div>
             
             <!-- SUCCESS STATE -->
-            <div class="opa-section" id="sec-success" style="display: none; text-align:center; padding: 4rem 2rem;">
-                <div style="width: 80px; height: 80px; background: #16a34a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
-                    <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            <div class="opa-section" id="sec-success" style="display: none; text-align:center; padding: 3rem 1.5rem; background: #fff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto;">
+                <div style="width: 72px; height: 72px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+                    <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <h2 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--opa-text);"><?php esc_html_e('Užsakymas patvirtintas!', 'opa-booking'); ?></h2>
-                <p style="color: var(--opa-text-muted); font-size: 1.125rem;"><?php esc_html_e('Užsakymo Nr. ', 'opa-booking'); ?><strong id="opa_final_booking_id" style="color: var(--opa-text);"></strong></p>
-                <div style="margin-top: 2rem;">
-                    <a href="#" id="opa_btn_download_invoice" target="_blank" class="opa-btn-submit" style="display:inline-flex; width:auto; padding: 1rem 2rem;"><?php esc_html_e('Atsisiųsti sąskaitos faktūros PDF', 'opa-booking'); ?></a>
+                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--opa-text);"><?php esc_html_e('Užsakymas Patvirtintas!', 'opa-booking'); ?></h2>
+                <p style="color: var(--opa-text-muted); font-size: 1.125rem; margin-bottom: 2rem;"><?php esc_html_e('Užsakymo Nr.', 'opa-booking'); ?> <strong id="opa_final_booking_id" style="color: var(--opa-text);"></strong></p>
+                
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; text-align: left; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--opa-text); margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;"><?php esc_html_e('Užsakymo Informacija', 'opa-booking'); ?></h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.95rem;">
+                        <div>
+                            <span style="color: var(--opa-text-muted); display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;"><?php esc_html_e('Data', 'opa-booking'); ?></span>
+                            <strong id="opa_final_date" style="color: var(--opa-text);"></strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--opa-text-muted); display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;"><?php esc_html_e('Kaina', 'opa-booking'); ?></span>
+                            <strong id="opa_final_price" style="color: #16a34a; font-size: 1.1rem;"></strong>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <span style="color: var(--opa-text-muted); display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;"><?php esc_html_e('Paslauga', 'opa-booking'); ?></span>
+                            <strong id="opa_final_service" style="color: var(--opa-text);"></strong>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <span style="color: var(--opa-text-muted); display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;"><?php esc_html_e('Adresas', 'opa-booking'); ?></span>
+                            <strong id="opa_final_address" style="color: var(--opa-text);"></strong>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="color: var(--opa-text-muted); font-size: 0.95rem; margin-bottom: 2rem;">
+                    <?php esc_html_e('Išsiuntėme užsakymo patvirtinimą į jūsų el. paštą. Jei turite klausimų, susisiekite su mumis.', 'opa-booking'); ?>
+                </p>
+
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="#" id="opa_btn_download_invoice" target="_blank" class="opa-btn-submit" style="display:inline-flex; align-items: center; justify-content: center; width:auto; padding: 0.75rem 1.5rem; background: var(--opa-primary); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; gap: 0.5rem; border: none;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <?php esc_html_e('Atsisiųsti Sąskaitą PDF', 'opa-booking'); ?>
+                    </a>
+                    <a href="<?php echo esc_url( home_url() ); ?>" class="opa-btn-submit" style="display:inline-flex; align-items: center; justify-content: center; width:auto; padding: 0.75rem 1.5rem; background: #f1f5f9; color: #475569; text-decoration: none; border-radius: 8px; font-weight: 600; border: none;">
+                        <?php esc_html_e('Grįžti į Pradžią', 'opa-booking'); ?>
+                    </a>
                 </div>
             </div>
 

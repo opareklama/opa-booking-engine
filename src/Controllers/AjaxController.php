@@ -623,7 +623,8 @@ class AjaxController {
             
             wp_send_json_success( [
                 'booking_number' => $booking_data->booking_number,
-                'invoice_token' => $invoice_record->invoice_token
+                'invoice_token' => $invoice_record->invoice_token,
+                'invoice_url' => get_site_url() . '?opa_invoice=' . $invoice_record->invoice_token
             ] );
             
         } catch ( \Exception $e ) {
