@@ -141,6 +141,7 @@ class Schema {
                 customer_email varchar(100) NOT NULL,
                 customer_phone varchar(50) NOT NULL,
                 address_line text NOT NULL,
+                delivery_notes longtext NULL,
                 status varchar(20) NOT NULL DEFAULT 'pending',
                 payment_status varchar(20) NOT NULL DEFAULT 'unpaid',
                 total_price decimal(10,2) NOT NULL DEFAULT 0.00,
