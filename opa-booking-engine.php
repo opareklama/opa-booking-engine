@@ -3,7 +3,7 @@
  * Plugin Name: Opa Booking Engine
  * Plugin URI:  https://opareklama.lt/booking-engine
  * Description: Enterprise-grade Booking Engine for Opa Reklama.
- * Version:     1.1.4
+ * Version:     1.2.0
  * Author:      Opa Reklama
  * Author URI:  https://opareklama.lt
  * License:     GPL-3.0+
@@ -29,7 +29,7 @@ if ( ! defined( 'OPA_BOOKING_MIN_WP_VERSION' ) ) {
 
 // Define Plugin Constants
 if ( ! defined( 'OPA_BOOKING_VERSION' ) ) {
-    define( 'OPA_BOOKING_VERSION', '1.1.4' );
+    define( 'OPA_BOOKING_VERSION', '1.2.0' );
 }
 if ( ! defined( 'OPA_BOOKING_PLUGIN_DIR' ) ) {
     define( 'OPA_BOOKING_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
@@ -69,6 +69,17 @@ if ( file_exists( OPA_BOOKING_PLUGIN_DIR . 'vendor/autoload.php' ) ) {
 }
 
 use OpaReklama\Booking\Bootstrap\Application;
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+// Initialize GitHub Update Checker
+if ( class_exists( PucFactory::class ) ) {
+    $opaUpdateChecker = PucFactory::buildUpdateChecker(
+        'https://github.com/opareklama/opa-booking-engine/',
+        __FILE__,
+        'opa-booking-engine'
+    );
+    $opaUpdateChecker->setBranch('main');
+}
 
 // Activation and Deactivation Hooks
 register_activation_hook( __FILE__, [ Application::class, 'activate' ] );
