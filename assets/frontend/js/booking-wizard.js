@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     if (city) {
                                         matchCity(city);
                                     } else {
-                                        alert('Could not determine city from selected address. Please select manually.');
+                                        alert(opaBookingObj.i18n.err_no_city);
                                     }
                                 });
                                 autocompleteResults.appendChild(div);
@@ -149,12 +149,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         if (!matched) {
-            alert(`Sorry, we currently do not service the area: ${cityName}.`);
+            alert(`${opaBookingObj.i18n.err_no_service} ${cityName}.`);
             // Reset fields
             els.citySelect.selectedIndex = 0;
             state.city = null;
-            els.wasteGrid.innerHTML = '<div style="grid-column:1/-1; color:var(--opa-text-muted);">Please select a city first.</div>';
-            els.containerGrid.innerHTML = '<div style="grid-column:1/-1; color:var(--opa-text-muted);">Please select a waste type first.</div>';
+            els.wasteGrid.innerHTML = `<div style="grid-column:1/-1; color:var(--opa-text-muted);">${opaBookingObj.i18n.select_city_first}</div>`;
+            els.containerGrid.innerHTML = `<div style="grid-column:1/-1; color:var(--opa-text-muted);">${opaBookingObj.i18n.select_waste_first}</div>`;
             updatePreview();
             document.getElementById('opa_detected_city_wrapper').style.display = 'none';
         } else {
@@ -194,16 +194,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 els.prevInfoBtn.onclick = () => {
                     let combinedHtml = `
                         <div style="margin-bottom: 2rem;">
-                            <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--opa-text);">Container Details</h4>
-                            <p>Volume: ${state.container.size}</p>
+                            <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--opa-text);">${opaBookingObj.i18n.container_details}</h4>
+                            <p>${opaBookingObj.i18n.volume} ${state.container.size}</p>
                             ${state.container.full_description ? state.container.full_description : ''}
                         </div>
                         <div style="padding: 1.25rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;">
-                            <h4 style="font-size: 1rem; font-weight: 600; color: #991b1b; margin-bottom: 0.5rem;">Waste Rules for ${state.waste.title}</h4>
-                            ${state.waste.full_description ? state.waste.full_description : '<p style="color: #991b1b; margin:0;">Standard waste disposal rules apply.</p>'}
+                            <h4 style="font-size: 1rem; font-weight: 600; color: #991b1b; margin-bottom: 0.5rem;">${opaBookingObj.i18n.waste_rules_for} ${state.waste.title}</h4>
+                            ${state.waste.full_description ? state.waste.full_description : `<p style="color: #991b1b; margin:0;">${opaBookingObj.i18n.standard_rules}</p>`}
                         </div>
                     `;
-                    openSlideOver('Order Details', targetObj.featured_image_url, combinedHtml);
+                    openSlideOver(opaBookingObj.i18n.order_details, targetObj.featured_image_url, combinedHtml);
                 };
             } else {
                 els.prevInfoBtn.style.display = 'none';
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.city = cityId;
         updatePreview();
 
-        els.wasteGrid.innerHTML = '<div style="grid-column:1/-1; padding:2rem; text-align:center;"><div class="opa-spinner"></div> Loading options...</div>';
+        els.wasteGrid.innerHTML = `<div style="grid-column:1/-1; padding:2rem; text-align:center;"><div class="opa-spinner"></div> ${opaBookingObj.i18n.loading_options}</div>`;
         scrollToSection(els.secWaste);
 
         fetch(`${ajaxurl}?action=opa_front_get_waste&city_id=${cityId}`)
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     res.data.forEach(w => {
                         const div = document.createElement('div');
                         div.className = `opa-pill-btn ${state.waste && state.waste.id == w.id ? 'is-selected' : ''}`;
-                        const infoBtnHtml = w.full_description ? `<button type="button" class="opa-pill-info-btn" title="More Info"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Details</span></button>` : '';
+                        const infoBtnHtml = w.full_description ? `<button type="button" class="opa-pill-info-btn" title="${opaBookingObj.i18n.details}"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>${opaBookingObj.i18n.details}</span></button>` : '';
                         const checkHtml = `<div class="opa-pill-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>`;
                         const imgHtml = w.featured_image_url ? `<div class="opa-pill-img-wrap">${checkHtml}${infoBtnHtml}<img src="${w.featured_image_url}" alt="${w.title}"></div>` : `<div style="position:relative; height:40px;">${checkHtml}${infoBtnHtml}</div>`;
                         
@@ -270,14 +270,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         els.wasteGrid.appendChild(div);
                     });
                 } else {
-                    els.wasteGrid.innerHTML = '<div style="color:var(--opa-text-muted);">No waste types available for this location.</div>';
+                    els.wasteGrid.innerHTML = `<div style="color:var(--opa-text-muted);">${opaBookingObj.i18n.no_waste}</div>`;
                 }
             });
     });
 
     // Load Containers
     function loadContainers() {
-        els.containerGrid.innerHTML = '<div style="grid-column:1/-1; padding:2rem; text-align:center;"><div class="opa-spinner"></div> Loading containers...</div>';
+        els.containerGrid.innerHTML = `<div style="grid-column:1/-1; padding:2rem; text-align:center;"><div class="opa-spinner"></div> ${opaBookingObj.i18n.loading_containers}</div>`;
         scrollToSection(els.secContainer);
 
         fetch(`${ajaxurl}?action=opa_front_get_containers&city_id=${state.city}&waste_id=${state.waste.id}`)
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 
                                 const div = document.createElement('div');
                                 div.className = `opa-pill-btn ${state.container && state.container.id == c.id ? 'is-selected' : ''}`;
-                                const infoBtnHtml = c.full_description ? `<button type="button" class="opa-pill-info-btn" title="More Info"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>Details</span></button>` : '';
+                                const infoBtnHtml = c.full_description ? `<button type="button" class="opa-pill-info-btn" title="${opaBookingObj.i18n.details}"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>${opaBookingObj.i18n.details}</span></button>` : '';
                                 const checkHtml = `<div class="opa-pill-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>`;
                                 const imgHtml = c.featured_image_url ? `<div class="opa-pill-img-wrap">${checkHtml}${infoBtnHtml}<img src="${c.featured_image_url}" alt="${c.title}"></div>` : `<div style="position:relative; height:40px;">${checkHtml}${infoBtnHtml}</div>`;
                                 
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <div class="opa-pill-title">${c.title}</div>
                                             <div style="font-weight:700; color:var(--opa-text); font-size:0.875rem;">${priceStr}</div>
                                         </div>
-                                        <div class="opa-pill-desc">Volume: ${c.size}</div>
+                                        <div class="opa-pill-desc">${opaBookingObj.i18n.volume} ${c.size}</div>
                                     </div>
                                 `;
 
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                     });
                 } else {
-                    els.containerGrid.innerHTML = '<div style="color:var(--opa-text-muted);">No containers available.</div>';
+                    els.containerGrid.innerHTML = `<div style="color:var(--opa-text-muted);">${opaBookingObj.i18n.no_containers}</div>`;
                 }
             });
     }
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const year = calDate.getFullYear();
         const month = calDate.getMonth();
         
-        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        const monthNames = opaBookingObj.i18n.months;
         els.calMonth.innerText = `${monthNames[month]} ${year}`;
         
         const firstDayIndex = new Date(year, month, 1).getDay() - 1;
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (d < today || state.blockedDates.includes(ymd)) {
                 div.classList.add('is-disabled');
-                if(state.blockedDates.includes(ymd)) div.title = "Fully booked";
+                if(state.blockedDates.includes(ymd)) div.title = opaBookingObj.i18n.fully_booked;
             } else {
                 if (state.date === ymd) div.classList.add('is-selected');
                 
@@ -411,13 +411,13 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         
         if (!state.city || !state.waste || !state.container || !state.date) {
-            alert("Please complete all sections before submitting.");
+            alert(opaBookingObj.i18n.complete_all);
             return;
         }
         
         const btn = els.btnSubmit;
         btn.disabled = true;
-        btn.innerHTML = '<div class="opa-spinner" style="width:20px;height:20px;border-color:#fff;border-bottom-color:transparent;"></div> Processing...';
+        btn.innerHTML = `<div class="opa-spinner" style="width:20px;height:20px;border-color:#fff;border-bottom-color:transparent;"></div> ${opaBookingObj.i18n.processing}`;
         
         // Generate Idempotency key if not exists
         if(!document.getElementById('opa_idemp_key').value) {
@@ -451,16 +451,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     btn.disabled = false;
-                    btn.innerHTML = 'Confirm Booking <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>';
+                    btn.innerHTML = `${opaBookingObj.i18n.confirm_booking} <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
                     const errObj = document.getElementById('opa-error-msg');
-                    errObj.innerText = res.data || "An error occurred.";
+                    errObj.innerText = res.data || opaBookingObj.i18n.error_occured;
                     errObj.style.display = 'block';
                 }
             })
             .catch(() => {
                 btn.disabled = false;
-                btn.innerHTML = 'Confirm Booking <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>';
-                alert("Network error.");
+                btn.innerHTML = `${opaBookingObj.i18n.confirm_booking} <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+                alert(opaBookingObj.i18n.network_error);
             });
     });
 

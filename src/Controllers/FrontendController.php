@@ -73,7 +73,35 @@ class FrontendController {
         
         wp_localize_script('opa-booking-wizard', 'opaBookingObj', [
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'    => wp_create_nonce('opa_frontend_nonce')
+            'nonce'    => wp_create_nonce('opa_frontend_nonce'),
+            'i18n'     => [
+                'err_no_city' => __('Could not determine city from selected address. Please select manually.', 'opa-booking'),
+                'err_no_service' => __('Sorry, we currently do not service the area:', 'opa-booking'),
+                'select_city_first' => __('Please select a city first.', 'opa-booking'),
+                'select_waste_first' => __('Please select a waste type first.', 'opa-booking'),
+                'loading_options' => __('Loading options...', 'opa-booking'),
+                'details' => __('Details', 'opa-booking'),
+                'no_waste' => __('No waste types available for this location.', 'opa-booking'),
+                'loading_containers' => __('Loading containers...', 'opa-booking'),
+                'volume' => __('Volume:', 'opa-booking'),
+                'no_containers' => __('No containers available.', 'opa-booking'),
+                'container_details' => __('Container Details', 'opa-booking'),
+                'waste_rules_for' => __('Waste Rules for', 'opa-booking'),
+                'standard_rules' => __('Standard waste disposal rules apply.', 'opa-booking'),
+                'order_details' => __('Order Details', 'opa-booking'),
+                'fully_booked' => __('Fully booked', 'opa-booking'),
+                'complete_all' => __('Please complete all sections before submitting.', 'opa-booking'),
+                'processing' => __('Processing...', 'opa-booking'),
+                'confirm_booking' => __('Confirm Booking', 'opa-booking'),
+                'error_occured' => __('An error occurred.', 'opa-booking'),
+                'network_error' => __('Network error.', 'opa-booking'),
+                'months' => [
+                    __('January', 'opa-booking'), __('February', 'opa-booking'), __('March', 'opa-booking'),
+                    __('April', 'opa-booking'), __('May', 'opa-booking'), __('June', 'opa-booking'),
+                    __('July', 'opa-booking'), __('August', 'opa-booking'), __('September', 'opa-booking'),
+                    __('October', 'opa-booking'), __('November', 'opa-booking'), __('December', 'opa-booking')
+                ]
+            ]
         ]);
 
         ob_start();
