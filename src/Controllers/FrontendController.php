@@ -75,6 +75,8 @@ class FrontendController {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('opa_frontend_nonce'),
             'tax_rate' => (float) get_option('opa_tax_rate', 0),
+            'default_city' => absint( get_option('opa_default_city', 0) ),
+            'terms_html' => get_option( 'opa_terms_html', '<a href="/taisykles-ir-salygos/" target="_blank">Sutinku su taisyklėmis</a>' ),
             'i18n'     => [
                 'err_no_city' => __('Nepavyko nustatyti miesto pagal pasirinktą adresą. Prašome pasirinkti rankiniu būdu.', 'opa-booking'),
                 'err_no_service' => __('Atsiprašome, šiuo metu neaptarnaujame šios vietovės:', 'opa-booking'),

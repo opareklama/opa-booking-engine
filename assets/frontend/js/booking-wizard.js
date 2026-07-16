@@ -77,10 +77,49 @@ document.addEventListener('DOMContentLoaded', () => {
         
         calFooter: document.getElementById('opa_cal_footer'),
         calPriceLabel: document.getElementById('opa_cal_price_label'),
-        calPriceVal: document.getElementById('opa_cal_price_val')
+        calPriceVal: document.getElementById('opa_cal_price_val'),
+
+        // Terms
+        termsLabel: document.getElementById('opa_terms_label')
     };
 
     let calDate = new Date();
+
+    // Inject Terms HTML
+    if (els.termsLabel && opaBookingObj.terms_html) {
+        els.termsLabel.innerHTML = opaBookingObj.terms_html;
+    }
+
+    // Customer Type Toggle
+    const typeRadios = document.querySelectorAll('input[name="customer_type"]');
+    const grpCustomerName = document.getElementById('grp_customer_name');
+    const lblCustomerName = document.getElementById('lbl_customer_name');
+    const inpCustomerName = document.getElementById('inp_customer_name');
+    
+    const grpCompanyCode = document.getElementById('grp_company_code');
+    const inpCompanyCode = document.getElementById('inp_company_code');
+    const grpPersonInCharge = document.getElementById('grp_person_in_charge');
+    const inpPersonInCharge = document.getElementById('inp_person_in_charge');
+
+    if (typeRadios.length > 0) {
+        typeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'legal') {
+                    lblCustomerName.innerText = 'Įmonės pavadinimas';
+                    grpCompanyCode.style.display = 'block';
+                    inpCompanyCode.required = true;
+                    grpPersonInCharge.style.display = 'block';
+                    inpPersonInCharge.required = true;
+                } else {
+                    lblCustomerName.innerText = 'Jūsų Vardas Pavardė';
+                    grpCompanyCode.style.display = 'none';
+                    inpCompanyCode.required = false;
+                    grpPersonInCharge.style.display = 'none';
+                    inpPersonInCharge.required = false;
+                }
+            });
+        });
+    }
 
     // Utility: Smooth scroll to section
     function scrollToSection(element) {
@@ -146,6 +185,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 autocompleteResults.classList.remove('is-active');
             }
         });
+    }
+
+    // Auto-select Default City
+    if (opaBookingObj.default_city > 0) {
+        for (let i = 0; i < els.citySelect.options.length; i++) {
+            if (parseInt(els.citySelect.options[i].value) === opaBookingObj.default_city) {
+                els.citySelect.selectedIndex = i;
+                els.citySelect.dispatchEvent(new Event('change'));
+                break;
+            }
+        }
     }
 
     function matchCity(cityName) {
@@ -467,6 +517,12 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('city_id', state.city);
         formData.append('waste_type_id', state.waste.id);
         formData.append('container_id', state.container.id);
+        
+        // Also capture terms acceptance
+        const termsCb = document.getElementById('opa_terms_cb');
+        if (termsCb && termsCb.checked) {
+            formData.append('terms_accepted', '1');
+        }
         
         fetch(ajaxurl, { method: 'POST', body: formData })
             .then(r => r.json())

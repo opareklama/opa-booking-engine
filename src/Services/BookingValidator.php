@@ -20,16 +20,34 @@ class BookingValidator {
         $validated = [];
 
         // Required fields
-        $required = ['city_id', 'waste_type_id', 'container_id', 'booking_date', 'customer_email', 'customer_phone', 'address_line'];
+        $required = ['city_id', 'waste_type_id', 'container_id', 'booking_date', 'customer_email', 'customer_phone', 'address_line', 'customer_name', 'customer_type'];
         foreach ( $required as $field ) {
             if ( empty( $payload[ $field ] ) ) {
                 throw new ValidationException( "Missing required field: {$field}", "ERR_MISSING_FIELD" );
             }
         }
+        
+        if ( empty( $payload['terms_accepted'] ) ) {
+            throw new ValidationException( "You must accept the terms and conditions.", "ERR_TERMS_NOT_ACCEPTED" );
+        }
 
         $validated['city_id'] = (int) $payload['city_id'];
         $validated['waste_type_id'] = (int) $payload['waste_type_id'];
         $validated['container_id'] = (int) $payload['container_id'];
+        
+        $validated['customer_type'] = in_array( $payload['customer_type'], ['natural', 'legal'] ) ? $payload['customer_type'] : 'natural';
+        $validated['customer_name'] = sanitize_text_field( $payload['customer_name'] );
+        
+        if ( $validated['customer_type'] === 'legal' ) {
+            if ( empty( $payload['company_code'] ) || empty( $payload['person_in_charge'] ) ) {
+                throw new ValidationException( "Company code and person in charge are required for legal entities.", "ERR_MISSING_LEGAL_FIELD" );
+            }
+            $validated['company_code'] = sanitize_text_field( $payload['company_code'] );
+            $validated['person_in_charge'] = sanitize_text_field( $payload['person_in_charge'] );
+        } else {
+            $validated['company_code'] = null;
+            $validated['person_in_charge'] = null;
+        }
         
         // Date validation
         $date = \DateTime::createFromFormat( 'Y-m-d', $payload['booking_date'] );

@@ -12,6 +12,8 @@
         update_option( 'opa_tax_rate', (float) ( $_POST['tax_rate'] ?? 0 ) );
         update_option( 'opa_currency_symbol', sanitize_text_field( $_POST['currency_symbol'] ?? '$' ) );
         update_option( 'opa_invoice_notes', sanitize_textarea_field( $_POST['invoice_notes'] ?? '' ) );
+        update_option( 'opa_default_city', absint( $_POST['default_city'] ?? 0 ) );
+        update_option( 'opa_terms_html', wp_kses_post( wp_unslash( $_POST['terms_html'] ?? '' ) ) );
         
         // Emails
         update_option( 'opa_enable_customer_emails', isset( $_POST['enable_customer_emails'] ) ? 'yes' : 'no' );
@@ -33,6 +35,8 @@
     $tax_rate = get_option( 'opa_tax_rate', 0 );
     $currency_symbol = get_option( 'opa_currency_symbol', '$' );
     $invoice_notes = get_option( 'opa_invoice_notes', '' );
+    $default_city = get_option( 'opa_default_city', 0 );
+    $terms_html = get_option( 'opa_terms_html', '<a href="/taisykles-ir-salygos/" target="_blank">Sutinku su taisyklėmis</a>' );
     
     $enable_customer = get_option( 'opa_enable_customer_emails', 'yes' );
     $customer_subject = get_option( 'opa_customer_subject', 'Your Booking Confirmation - {company_name}' );
@@ -44,7 +48,8 @@
     ?>
     
     <h2 class="nav-tab-wrapper" style="margin-top: 20px;">
-        <a href="#tab-general" class="nav-tab nav-tab-active" onclick="opaSwitchTab(event, 'tab-general')">Invoice Settings</a>
+        <a href="#tab-general" class="nav-tab nav-tab-active" onclick="opaSwitchTab(event, 'tab-general')">General Settings</a>
+        <a href="#tab-invoice" class="nav-tab" onclick="opaSwitchTab(event, 'tab-invoice')">Invoice Settings</a>
         <a href="#tab-email" class="nav-tab" onclick="opaSwitchTab(event, 'tab-email')">Email Settings</a>
     </h2>
 
@@ -53,6 +58,34 @@
             <?php wp_nonce_field( 'opa_save_settings', 'opa_settings_nonce' ); ?>
             
             <div id="tab-general" class="opa-tab-content">
+                <table class="form-table">
+                    <tr>
+                        <th scope="row"><label for="default_city">Default City</label></th>
+                        <td>
+                            <select name="default_city" id="default_city">
+                                <option value="0">-- None --</option>
+                                <?php
+                                global $wpdb;
+                                $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHERE status = 'active' ORDER BY priority ASC, name ASC");
+                                foreach($cities as $city) {
+                                    echo '<option value="'.esc_attr($city->id).'" '.selected($default_city, $city->id, false).'>'.esc_html($city->name).'</option>';
+                                }
+                                ?>
+                            </select>
+                            <br><small>If selected, this city will be auto-selected when users open the booking form.</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="terms_html">Terms & Conditions HTML</label></th>
+                        <td>
+                            <textarea name="terms_html" id="terms_html" class="large-text" rows="3"><?php echo esc_textarea( $terms_html ); ?></textarea>
+                            <br><small>HTML allowed (e.g. <code>&lt;a href="..."&gt;Sutinku...&lt;/a&gt;</code>). This will appear next to a required checkbox before submission.</small>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="tab-invoice" class="opa-tab-content" style="display: none;">
                 <table class="form-table">
                     <tr>
                         <th scope="row"><label for="company_logo">Logo URL</label></th>

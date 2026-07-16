@@ -95,18 +95,18 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                             <!-- Days injected via JS -->
                         </div>
                         <div class="opa-calendar-footer" id="opa_cal_footer" style="display: none; align-items: center; justify-content: space-between; border-top: 1px solid #e2e8f0; margin-top: 1rem; padding-top: 1rem; flex-wrap: wrap; gap: 1rem;">
-                            <div class="opa-cal-price-box" style="background: #16a34a; color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; text-align: center; min-width: 140px;">
-                                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9;" id="opa_cal_price_label">Kaina be PVM:</div>
-                                <div style="font-size: 1.25rem; font-weight: 700; margin-top: 0.25rem;" id="opa_cal_price_val">--</div>
+                            <div class="opa-cal-price-box" style="background: #22c55e; color: #fff; padding: 0.85rem 1.5rem; border-radius: 8px; text-align: center; min-width: 160px; box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.2);">
+                                <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.95; margin-bottom: 0.25rem;" id="opa_cal_price_label">Kaina be PVM:</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; line-height: 1;" id="opa_cal_price_val">--</div>
                             </div>
-                            <div class="opa-cal-legend" style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: #64748b; flex-wrap: wrap;">
+                            <div class="opa-cal-legend" style="display: flex; gap: 1.5rem; font-size: 0.95rem; color: #64748b; flex-wrap: wrap; align-items: center;">
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #16a34a;"></div>
+                                    <div style="width: 18px; height: 18px; border-radius: 50%; border: 2px solid #22c55e;"></div>
                                     <span>Yra laisvų konteinerių</span>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <div style="width: 16px; height: 16px; border-radius: 50%; background: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 4px, #e2e8f0 4px, #e2e8f0 8px);"></div>
-                                    <span>Užimta</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" style="border-radius:50%; background:#f8fafc;"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                                    <span style="color: #94a3b8;">Užimta</span>
                                 </div>
                             </div>
                         </div>
@@ -123,30 +123,58 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                     <h2 class="opa-sec-title"><?php esc_html_e('Galutiniai duomenys', 'opa-booking'); ?></h2>
                 </div>
                 <div class="opa-section-content">
+                    <div style="margin-bottom: 1.5rem; display: flex; gap: 1.5rem; font-weight: 500; color: #475569;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="customer_type" value="natural" checked style="width:18px;height:18px;accent-color:#16a34a;">
+                            Fizinis asmuo (Natural person)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="customer_type" value="legal" style="width:18px;height:18px;accent-color:#16a34a;">
+                            Juridinis asmuo (Legal entity)
+                        </label>
+                    </div>
+
                     <div class="opa-input-grid">
+                        <div class="opa-input-group" id="grp_customer_name" style="grid-column: 1 / -1;">
+                            <label class="opa-label" id="lbl_customer_name">Jūsų Vardas Pavardė</label>
+                            <input type="text" name="customer_name" id="inp_customer_name" class="opa-input-pro" required>
+                        </div>
+                        
+                        <div class="opa-input-group" id="grp_company_code" style="display:none;">
+                            <label class="opa-label">Įmonės kodas</label>
+                            <input type="text" name="company_code" id="inp_company_code" class="opa-input-pro">
+                        </div>
+                        <div class="opa-input-group" id="grp_person_in_charge" style="display:none;">
+                            <label class="opa-label">Atsakingo asmens Vardas Pavardė</label>
+                            <input type="text" name="person_in_charge" id="inp_person_in_charge" class="opa-input-pro">
+                        </div>
+
                         <div class="opa-input-group">
-                            <label class="opa-label">Vardas ir pavardė</label>
-                            <input type="text" name="customer_name" class="opa-input-pro" required>
+                            <label class="opa-label">El. paštas</label>
+                            <input type="email" name="customer_email" class="opa-input-pro" required>
                         </div>
                         <div class="opa-input-group">
-                            <label class="opa-label">El. pašto adresas</label>
-                            <input type="email" name="customer_email" class="opa-input-pro" required>
+                            <label class="opa-label">Jūsų telefono Nr.</label>
+                            <input type="text" name="customer_phone" class="opa-input-pro" required>
                         </div>
                         <div class="opa-input-group" style="grid-column: 1 / -1;">
                             <label class="opa-label">Visas paslaugos adresas</label>
                             <input type="text" name="address_line" class="opa-input-pro" placeholder="pvz. Pagrindinė g. 123, 4B butas, Miestas" required>
                         </div>
                         <div class="opa-input-group" style="grid-column: 1 / -1;">
-                            <label class="opa-label">Telefono numeris</label>
-                            <input type="text" name="customer_phone" class="opa-input-pro" required>
-                        </div>
-                        <div class="opa-input-group" style="grid-column: 1 / -1;">
-                            <label class="opa-label">Pristatymo pastabos (Neprivaloma)</label>
+                            <label class="opa-label">Jūsų individuali žinutė (Neprivaloma)</label>
                             <textarea name="delivery_notes" class="opa-input-pro" rows="3" placeholder="Specialios instrukcijos..."></textarea>
                         </div>
                     </div>
                     
                     <div id="opa-error-msg" style="display:none; padding: 1rem; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; border-radius: 8px; margin-top: 1.5rem;"></div>
+
+                    <div style="margin-top: 2rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                        <input type="checkbox" id="opa_terms_cb" required style="margin-top: 0.25rem; width: 16px; height: 16px; accent-color: #16a34a; cursor: pointer;">
+                        <label for="opa_terms_cb" style="font-size: 0.9rem; color: #475569; line-height: 1.5; cursor: pointer;" id="opa_terms_label">
+                            <!-- Injected via JS -->
+                        </label>
+                    </div>
 
                     <div style="margin-top: 2rem;">
                         <button type="submit" class="opa-btn-submit" id="opa_btn_submit">

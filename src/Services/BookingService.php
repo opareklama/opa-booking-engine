@@ -55,22 +55,27 @@ class BookingService {
 
         try {
             $booking_data = [
-                'booking_uid'    => $booking_uid,
-                'booking_number' => $booking_number,
-                'city_id'        => $validated_payload['city_id'],
-                'waste_type_id'  => $validated_payload['waste_type_id'],
-                'container_id'   => $validated_payload['container_id'],
-                'booking_date'   => $validated_payload['booking_date'],
-                'customer_email' => $validated_payload['customer_email'],
-                'customer_phone' => $validated_payload['customer_phone'],
-                'address_line'   => $validated_payload['address_line'],
-                'status'         => 'pending',
-                'payment_status' => 'unpaid',
-                'total_price'    => $total_price,
+                'booking_uid'      => $booking_uid,
+                'booking_number'   => $booking_number,
+                'city_id'          => $validated_payload['city_id'],
+                'waste_type_id'    => $validated_payload['waste_type_id'],
+                'container_id'     => $validated_payload['container_id'],
+                'booking_date'     => $validated_payload['booking_date'],
+                'customer_type'    => $validated_payload['customer_type'],
+                'customer_name'    => $validated_payload['customer_name'],
+                'company_code'     => $validated_payload['company_code'],
+                'person_in_charge' => $validated_payload['person_in_charge'],
+                'customer_email'   => $validated_payload['customer_email'],
+                'customer_phone'   => $validated_payload['customer_phone'],
+                'address_line'     => $validated_payload['address_line'],
+                'delivery_notes'   => sanitize_textarea_field( $validated_payload['delivery_notes'] ?? '' ),
+                'status'           => 'pending',
+                'payment_status'   => 'unpaid',
+                'total_price'      => $total_price,
             ];
 
             $booking_id = $this->booking_repo->insert( $booking_data, [
-                '%s', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%f'
+                '%s', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%f'
             ] );
 
             // 5. Commit Transaction

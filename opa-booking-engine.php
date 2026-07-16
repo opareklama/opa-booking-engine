@@ -3,7 +3,7 @@
  * Plugin Name: Opa Booking Engine
  * Plugin URI:  https://opareklama.lt/booking-engine
  * Description: Enterprise-grade Booking Engine for Opa Reklama.
- * Version:     1.0.14
+ * Version:     1.0.15
  * Author:      Opa Reklama
  * Author URI:  https://opareklama.lt
  * License:     GPL-3.0+
@@ -29,7 +29,7 @@ if ( ! defined( 'OPA_BOOKING_MIN_WP_VERSION' ) ) {
 
 // Define Plugin Constants
 if ( ! defined( 'OPA_BOOKING_VERSION' ) ) {
-    define( 'OPA_BOOKING_VERSION', '1.0.14' );
+    define( 'OPA_BOOKING_VERSION', '1.0.15' );
 }
 if ( ! defined( 'OPA_BOOKING_PLUGIN_DIR' ) ) {
     define( 'OPA_BOOKING_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

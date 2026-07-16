@@ -90,7 +90,11 @@
                 <td style="width: 50%;">
                     <div class="bill-to">
                         <h3>Pirkėjas:</h3>
-                        <p><strong><?php echo esc_html($booking->customer_email); ?></strong><br>
+                        <p><strong><?php echo esc_html($booking->customer_name); ?></strong><br>
+                        <?php if ( !empty($booking->company_code) ) : ?>
+                            Įmonės kodas: <?php echo esc_html($booking->company_code); ?><br>
+                        <?php endif; ?>
+                        <?php echo esc_html($booking->customer_email); ?><br>
                         <?php echo esc_html($booking->customer_phone); ?><br>
                         <?php echo esc_html($booking->address_line); ?></p>
                     </div>
