@@ -65,7 +65,19 @@ document.addEventListener('DOMContentLoaded', () => {
         slideImg: document.getElementById('opa_slide_img'),
         slideDesc: document.getElementById('opa_slide_desc'),
 
-        btnSubmit: document.getElementById('opa_btn_submit')
+        slideDesc: document.getElementById('opa_slide_desc'),
+
+        btnSubmit: document.getElementById('opa_btn_submit'),
+        
+        // Tax & Totals UI
+        sumBasePrice: document.getElementById('sum_base_price'),
+        sumTaxRate: document.getElementById('sum_tax_rate'),
+        sumTaxAmount: document.getElementById('sum_tax_amount'),
+        sumGrandTotal: document.getElementById('sum_grand_total'),
+        
+        calFooter: document.getElementById('opa_cal_footer'),
+        calPriceLabel: document.getElementById('opa_cal_price_label'),
+        calPriceVal: document.getElementById('opa_cal_price_val')
     };
 
     let calDate = new Date();
@@ -172,8 +184,33 @@ document.addEventListener('DOMContentLoaded', () => {
         els.sumDate.innerText = state.date ? new Date(state.date).toLocaleDateString() : '—';
 
         // Price
-        const displayPrice = (state.price > 0 && state.date) ? `€${parseFloat(state.price).toFixed(2)}` : '---';
-        els.prevPrice.innerText = displayPrice;
+        let basePrice = state.price > 0 && state.date ? parseFloat(state.price) : 0;
+        let taxRate = opaBookingObj.tax_rate ? parseFloat(opaBookingObj.tax_rate) : 0;
+        let taxAmount = (basePrice * taxRate) / 100;
+        let grandTotal = basePrice + taxAmount;
+        
+        if (basePrice > 0) {
+            els.prevPrice.style.display = 'none'; // We'll show detailed breakdown below instead of single big price
+            
+            els.sumBasePrice.innerText = `€${basePrice.toFixed(2)}`;
+            els.sumTaxRate.innerText = taxRate;
+            els.sumTaxAmount.innerText = `€${taxAmount.toFixed(2)}`;
+            els.sumGrandTotal.innerText = `€${grandTotal.toFixed(2)}`;
+            
+            els.calFooter.style.display = 'flex';
+            els.calPriceLabel.innerText = `Kaina be ${taxRate}% PVM:`;
+            els.calPriceVal.innerText = `€${basePrice.toFixed(2)}`;
+        } else {
+            els.prevPrice.style.display = 'block';
+            els.prevPrice.innerText = '---';
+            
+            els.sumBasePrice.innerText = '—';
+            els.sumTaxRate.innerText = taxRate;
+            els.sumTaxAmount.innerText = '—';
+            els.sumGrandTotal.innerText = '—';
+            
+            els.calFooter.style.display = 'none';
+        }
 
         // Image logic (prioritize container, fallback to waste)
         const targetObj = state.container || state.waste;
@@ -438,8 +475,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('opa_final_booking_id').innerText = res.data.booking_number;
                     
                     // Populate informative details
+                    let finalBase = parseFloat(state.price);
+                    let finalTax = (finalBase * parseFloat(opaBookingObj.tax_rate)) / 100;
+                    let finalGrand = finalBase + finalTax;
+                    
                     document.getElementById('opa_final_date').innerText = new Date(state.date).toLocaleDateString();
-                    document.getElementById('opa_final_price').innerText = `€${parseFloat(state.price).toFixed(2)}`;
+                    document.getElementById('opa_final_price').innerText = `€${finalGrand.toFixed(2)} (su PVM)`;
                     document.getElementById('opa_final_service').innerText = `${state.container.title} (${state.waste.title})`;
                     document.getElementById('opa_final_address').innerText = formData.get('address_line');
                     

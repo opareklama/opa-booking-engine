@@ -60,9 +60,9 @@
             $currency = get_option('opa_currency_symbol', '€');
             $tax_rate = (float) get_option('opa_tax_rate', 0);
             
-            $base_price = (float) $booking->total_price;
-            $tax_amount = ($base_price * $tax_rate) / 100;
-            $grand_total = $base_price + $tax_amount;
+            $base_price = (float) $invoice->subtotal;
+            $tax_amount = (float) $invoice->tax_total;
+            $grand_total = (float) $invoice->grand_total;
         ?>
         
         <table class="header-table">

@@ -94,6 +94,22 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                         <div class="opa-calendar-grid" id="opa_cal_days">
                             <!-- Days injected via JS -->
                         </div>
+                        <div class="opa-calendar-footer" id="opa_cal_footer" style="display: none; align-items: center; justify-content: space-between; border-top: 1px solid #e2e8f0; margin-top: 1rem; padding-top: 1rem; flex-wrap: wrap; gap: 1rem;">
+                            <div class="opa-cal-price-box" style="background: #16a34a; color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; text-align: center; min-width: 140px;">
+                                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9;" id="opa_cal_price_label">Kaina be PVM:</div>
+                                <div style="font-size: 1.25rem; font-weight: 700; margin-top: 0.25rem;" id="opa_cal_price_val">--</div>
+                            </div>
+                            <div class="opa-cal-legend" style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: #64748b; flex-wrap: wrap;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid #16a34a;"></div>
+                                    <span>Yra laisvų konteinerių</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div style="width: 16px; height: 16px; border-radius: 50%; background: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 4px, #e2e8f0 4px, #e2e8f0 8px);"></div>
+                                    <span>Užimta</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <input type="hidden" id="opa_f_date" name="booking_date" required>
                     <p id="opa_date_error" style="color: #ef4444; font-size: 0.875rem; margin-top: 1rem; display: none;">Prašome pasirinkti galimą datą.</p>
@@ -216,6 +232,12 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                     <div class="opa-ps-row"><span>Atliekos:</span><strong id="sum_waste">—</strong></div>
                     <div class="opa-ps-row"><span>Dydis:</span><strong id="sum_container">—</strong></div>
                     <div class="opa-ps-row"><span>Data:</span><strong id="sum_date">—</strong></div>
+                </div>
+                
+                <div class="opa-preview-list" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #cbd5e1;">
+                    <div class="opa-ps-row" style="color: #64748b; font-size: 0.85rem;"><span>Kaina be PVM:</span><strong id="sum_base_price">—</strong></div>
+                    <div class="opa-ps-row" style="color: #64748b; font-size: 0.85rem;"><span>PVM (<span id="sum_tax_rate">0</span>%):</span><strong id="sum_tax_amount">—</strong></div>
+                    <div class="opa-ps-row" style="margin-top: 0.5rem; color: #0f172a; font-size: 1.125rem;"><span>Bendra suma:</span><strong id="sum_grand_total">—</strong></div>
                 </div>
             </div>
         </div>

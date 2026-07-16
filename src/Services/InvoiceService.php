@@ -17,6 +17,10 @@ class InvoiceService {
         $invoice_number = "INV-" . date("Y") . "-" . str_pad((string)$booking_id, 4, "0", STR_PAD_LEFT);
         $invoice_token = wp_generate_password( 64, false );
         
+        $tax_rate = (float) get_option('opa_tax_rate', 0);
+        $base_price = $total_price / (1 + ($tax_rate / 100));
+        $tax_amount = $total_price - $base_price;
+        
         $snapshot = [
             "company_name" => get_option("opa_company_name", "Opa Reklama"),
             "company_logo" => get_option("opa_company_logo", ""),
@@ -28,8 +32,8 @@ class InvoiceService {
             "booking_id" => $booking_id,
             "invoice_number" => $invoice_number,
             "invoice_token" => $invoice_token,
-            "subtotal" => $total_price,
-            "tax_total" => 0.00,
+            "subtotal" => $base_price,
+            "tax_total" => $tax_amount,
             "grand_total" => $total_price,
             "snapshot_data" => wp_json_encode( $snapshot )
         ], ["%d", "%s", "%s", "%f", "%f", "%f", "%s"]);

@@ -74,6 +74,7 @@ class FrontendController {
         wp_localize_script('opa-booking-wizard', 'opaBookingObj', [
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('opa_frontend_nonce'),
+            'tax_rate' => (float) get_option('opa_tax_rate', 0),
             'i18n'     => [
                 'err_no_city' => __('Nepavyko nustatyti miesto pagal pasirinktą adresą. Prašome pasirinkti rankiniu būdu.', 'opa-booking'),
                 'err_no_service' => __('Atsiprašome, šiuo metu neaptarnaujame šios vietovės:', 'opa-booking'),

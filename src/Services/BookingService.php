@@ -36,11 +36,15 @@ class BookingService {
         }
         
         // 2. Calculate authoritative price
-        $total_price = $this->pricing_service->calculate_price(
+        $base_price = $this->pricing_service->calculate_price(
             $validated_payload['city_id'],
             $validated_payload['waste_type_id'],
             $validated_payload['container_id']
         );
+        
+        $tax_rate = (float) get_option('opa_tax_rate', 0);
+        $tax_amount = ($base_price * $tax_rate) / 100;
+        $total_price = $base_price + $tax_amount;
 
         // 3. Generate secure tokens
         $booking_uid = wp_generate_password( 32, false );
