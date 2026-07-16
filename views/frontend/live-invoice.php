@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Invoice <?php echo esc_html($invoice->invoice_number); ?></title>
+    <title>Sąskaita faktūra <?php echo esc_html($invoice->invoice_number); ?></title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 14px; color: #334155; background: #f8fafc; margin: 0; padding: 40px 20px; }
@@ -54,14 +54,14 @@
                 VAT: <?php echo esc_html($snapshot['vat_number']); ?></p>
             </div>
             <div class="invoice-details">
-                <h2>INVOICE</h2>
-                <p><strong>Invoice #:</strong> <?php echo esc_html($invoice->invoice_number); ?><br>
-                <strong>Date:</strong> <?php echo esc_html(date('F j, Y', strtotime($invoice->created_at))); ?></p>
+                <h2>SĄSKAITA FAKTŪRA</h2>
+                <p><strong>Sąskaitos Nr.:</strong> <?php echo esc_html($invoice->invoice_number); ?><br>
+                <strong>Data:</strong> <?php echo esc_html(date('Y-m-d', strtotime($invoice->created_at))); ?></p>
             </div>
         </div>
 
         <div class="bill-to">
-            <h3>Bill To:</h3>
+            <h3>Pirkėjas:</h3>
             <p><strong><?php echo esc_html($booking->customer_email); ?></strong><br>
             <?php echo esc_html($booking->customer_phone); ?><br>
             <?php echo esc_html($booking->address_line); ?></p>
@@ -70,16 +70,16 @@
         <table>
             <thead>
                 <tr>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th style="text-align:right;">Total</th>
+                    <th>Aprašymas</th>
+                    <th>Kiekis</th>
+                    <th>Kaina</th>
+                    <th style="text-align:right;">Suma</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Container Booking (Ref: <?php echo esc_html($booking->booking_number); ?>)<br>
-                    <small>Date: <?php echo esc_html($booking->booking_date); ?></small></td>
+                    <td>Konteinerio užsakymas (Nuoroda: <?php echo esc_html($booking->booking_number); ?>)<br>
+                    <small>Data: <?php echo esc_html($booking->booking_date); ?></small></td>
                     <td>1</td>
                     <td><?php echo esc_html($currency) . number_format($base_price, 2); ?></td>
                     <td style="text-align:right;"><?php echo esc_html($currency) . number_format($base_price, 2); ?></td>
@@ -87,17 +87,17 @@
                 
                 <?php if ($tax_rate > 0): ?>
                 <tr class="total-row">
-                    <td colspan="3" style="text-align:right;">Subtotal:</td>
+                    <td colspan="3" style="text-align:right;">Tarpinė suma:</td>
                     <td style="text-align:right;"><?php echo esc_html($currency) . number_format($base_price, 2); ?></td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="text-align:right;">Tax/VAT (<?php echo esc_html($tax_rate); ?>%):</td>
+                    <td colspan="3" style="text-align:right;">PVM (<?php echo esc_html($tax_rate); ?>%):</td>
                     <td style="text-align:right;"><?php echo esc_html($currency) . number_format($tax_amount, 2); ?></td>
                 </tr>
                 <?php endif; ?>
                 
                 <tr class="<?php echo ($tax_rate > 0) ? '' : 'total-row'; ?> grand-total">
-                    <td colspan="3" style="text-align:right;">Grand Total:</td>
+                    <td colspan="3" style="text-align:right;">Bendra suma:</td>
                     <td style="text-align:right;"><?php echo esc_html($currency) . number_format($grand_total, 2); ?></td>
                 </tr>
             </tbody>
@@ -106,19 +106,19 @@
         <?php $notes = get_option('opa_invoice_notes', ''); ?>
         <?php if (!empty($notes)): ?>
         <div class="footer-notes">
-            <strong>Notes:</strong><br>
+            <strong>Pastabos:</strong><br>
             <?php echo nl2br(esc_html($notes)); ?>
         </div>
         <?php endif; ?>
 
         <div class="footer">
-            <p>Thank you for your business!</p>
+            <p>Dėkojame, kad renkatės mus!</p>
             
             <?php if ( ! isset($_GET['format']) || $_GET['format'] !== 'pdf' ): ?>
                 <div style="margin-top: 40px;">
                     <a href="<?php echo esc_url(add_query_arg('format', 'pdf')); ?>" class="download-btn">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:8px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
-                        Download PDF
+                        Atsisiųsti PDF
                     </a>
                 </div>
             <?php endif; ?>
