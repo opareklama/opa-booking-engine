@@ -299,7 +299,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${b.invoice_number ? `<span style="font-size:12px; color:#64748b;">Inv: ${hl(b.invoice_number)}</span>` : ''}
                 </td>
                 <td class="opa-cust-details">
-                    <strong>${hl(b.customer_email)}</strong>
+                    <strong>${hl(b.customer_name)}</strong>
+                    ${b.company_code ? `<span style="font-size:12px; color:#64748b; display:block; margin-bottom:4px;">Įmonės kodas: ${hl(b.company_code)}</span>` : ''}
+                    <span>${hl(b.customer_email)}</span>
                     <span>${hl(b.customer_phone)}</span>
                 </td>
                 <td style="color:#475569;">
@@ -334,8 +336,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 document.getElementById('modal_b_title').innerHTML = modalTitle;
                 
-                document.getElementById('modal_v_cust').innerHTML = `<strong>${b.customer_email}</strong><br>${b.customer_phone}`;
-                document.getElementById('modal_v_address').innerText = b.address_line;
+                let custHtml = `<strong>${b.customer_name}</strong>`;
+                if (b.customer_type === 'legal' && b.company_code) {
+                    custHtml += `<br><span style="font-size:13px; color:#64748b;">Įmonės kodas: ${b.company_code}</span>`;
+                }
+                if (b.person_in_charge) {
+                    custHtml += `<br><span style="font-size:13px; color:#64748b;">Atsakingas asmuo: ${b.person_in_charge}</span>`;
+                }
+                custHtml += `<br><br>${b.customer_email}<br>${b.customer_phone}`;
+                document.getElementById('modal_v_cust').innerHTML = custHtml;
+                
+                let addrHtml = b.address_line;
+                if (b.delivery_notes) {
+                    addrHtml += `<br><br><strong>Pastabos (Žinutė):</strong><br><span style="color:#64748b; font-size:13px; display:block; margin-top:4px; padding:8px; background:#f1f5f9; border-radius:4px;">${b.delivery_notes.replace(/\\n/g, '<br>')}</span>`;
+                }
+                document.getElementById('modal_v_address').innerHTML = addrHtml;
                 document.getElementById('modal_v_service').innerHTML = `<strong>City:</strong> ${b.city}<br><strong>Waste Type:</strong> ${b.waste_type}<br><strong>Container:</strong> ${b.container}`;
                 document.getElementById('modal_v_date').innerText = b.booking_date;
                 document.getElementById('modal_v_price').innerText = currency + parseFloat(b.total_price).toFixed(2);
