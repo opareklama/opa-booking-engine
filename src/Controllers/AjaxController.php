@@ -326,8 +326,7 @@ class AjaxController {
 
             if ( ! empty( $_GET['search'] ) ) {
                 $search = '%' . $wpdb->esc_like( $_GET['search'] ) . '%';
-                $where[] = "(c.name LIKE %s OR w.title LIKE %s OR cont.title LIKE %s OR cont.name LIKE %s)";
-                $params[] = $search;
+                $where[] = "(c.name LIKE %s OR w.title LIKE %s OR cont.name LIKE %s)";
                 $params[] = $search;
                 $params[] = $search;
                 $params[] = $search;
@@ -348,7 +347,7 @@ class AjaxController {
             // Fetch Data
             $sql = "SELECT r.id, r.city_id, r.waste_type_id, r.container_id, r.base_price, r.status, r.created_at,
                            c.name as city_name, w.title as waste_name, 
-                           COALESCE(NULLIF(cont.display_name, ''), cont.title, cont.name) as container_name
+                           COALESCE(NULLIF(cont.display_name, ''), cont.name) as container_name
                     FROM $table r
                     JOIN $cities_tbl c ON r.city_id = c.id
                     JOIN $waste_tbl w ON r.waste_type_id = w.id
@@ -528,11 +527,11 @@ class AjaxController {
             $city_id = (int) ( $_GET['city_id'] ?? 0 );
             $waste_id = (int) ( $_GET['waste_id'] ?? 0 );
             $sql = $wpdb->prepare( "
-                SELECT DISTINCT c.id, COALESCE(NULLIF(c.display_name, ''), c.title, c.name) as title, c.volume as size, c.featured_image_id 
+                SELECT DISTINCT c.id, COALESCE(NULLIF(c.display_name, ''), c.name) as title, c.volume as size, c.featured_image_id 
                 FROM {$wpdb->prefix}opa_containers c
                 JOIN {$wpdb->prefix}opa_service_rules r ON c.id = r.container_id
                 WHERE r.city_id = %d AND r.waste_type_id = %d AND r.status = 'active' AND c.status = 'active'
-                ORDER BY c.title ASC
+                ORDER BY c.name ASC
             ", $city_id, $waste_id );
             
             $results = $wpdb->get_results( $sql );
@@ -700,7 +699,7 @@ class AjaxController {
             
             $where_sql = implode( ' AND ', $where );
             
-            $sql = "SELECT b.*, c.name as city, w.title as waste_type, cont.title as container, i.invoice_token, i.invoice_number
+            $sql = "SELECT b.*, c.name as city, w.title as waste_type, COALESCE(NULLIF(cont.display_name, ''), cont.name) as container, i.invoice_token, i.invoice_number
                     FROM {$wpdb->prefix}opa_bookings b
                     JOIN {$wpdb->prefix}opa_cities c ON b.city_id = c.id
                     JOIN {$wpdb->prefix}opa_waste_types w ON b.waste_type_id = w.id
