@@ -188,9 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Auto-select Default City
-    if (opaBookingObj.default_city > 0) {
+    if (opaBookingObj.default_city) {
+        let defCityStr = String(opaBookingObj.default_city);
         for (let i = 0; i < els.citySelect.options.length; i++) {
-            if (parseInt(els.citySelect.options[i].value) === opaBookingObj.default_city) {
+            if (els.citySelect.options[i].value === defCityStr) {
                 els.citySelect.selectedIndex = i;
                 els.citySelect.dispatchEvent(new Event('change'));
                 break;
@@ -520,7 +521,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Also capture terms acceptance
         const termsCb = document.getElementById('opa_terms_cb');
-        if (termsCb && termsCb.checked) {
+        if (termsCb) {
+            if (!termsCb.checked) {
+                alert("Prašome sutikti su taisyklėmis ir sąlygomis.");
+                return;
+            }
             formData.append('terms_accepted', '1');
         }
         
