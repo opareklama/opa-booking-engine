@@ -262,10 +262,10 @@ $cities = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}opa_cities WHE
                     <div class="opa-ps-row"><span>Data:</span><strong id="sum_date">—</strong></div>
                 </div>
                 
-                <div class="opa-preview-list" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #cbd5e1;">
-                    <div class="opa-ps-row" style="color: #64748b; font-size: 0.85rem;"><span>Kaina be PVM:</span><strong id="sum_base_price">—</strong></div>
-                    <div class="opa-ps-row" style="color: #64748b; font-size: 0.85rem;"><span>PVM (<span id="sum_tax_rate">0</span>%):</span><strong id="sum_tax_amount">—</strong></div>
-                    <div class="opa-ps-row" style="margin-top: 0.5rem; color: #0f172a; font-size: 1.125rem;"><span>Bendra suma:</span><strong id="sum_grand_total">—</strong></div>
+                <div class="opa-preview-list opa-price-breakdown" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #cbd5e1;">
+                    <div class="opa-ps-row" style="color: #64748b; font-size: 0.85rem;"><span>Kaina be PVM:</span><strong id="sum_base_price">€”</strong></div>
+                    <div class="opa-ps-row" style="color: #64748b; font-size: 0.85rem;"><span>PVM (<span id="sum_tax_rate">0</span>%):</span><strong id="sum_tax_amount">€”</strong></div>
+                    <div class="opa-ps-row" style="margin-top: 0.5rem; color: #0f172a; font-size: 1.125rem;"><span>Bendra suma:</span><strong id="sum_grand_total">€”</strong></div>
                 </div>
             </div>
         </div>

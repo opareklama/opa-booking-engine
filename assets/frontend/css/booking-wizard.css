@@ -668,26 +668,38 @@
         padding: 1rem 1.25rem;
     }
     .opa-preview-img-wrapper {
-        width: 80px; height: 80px; border-radius: 8px; overflow: visible;
+        width: 80px; height: 80px; border-radius: 8px; overflow: visible; position: relative; flex-shrink: 0;
     }
     #opa_preview_info_btn { 
-        top: -12px;
-        right: 1.25rem;
+        top: -10px;
+        right: -10px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
         background: #111827 !important;
         color: #ffffff !important;
         z-index: 200;
+        width: 28px !important;
+        height: 28px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
     }
+    #opa_preview_info_btn span { display: none !important; }
+    #opa_preview_info_btn svg { width: 16px; height: 16px; margin: 0; }
+    
     #opa_preview_placeholder { display: none !important; }
     .opa-preview-details {
-        padding: 0 0 0 1rem;
+        padding: 0 0 0 1.25rem;
         flex-grow: 1;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
     }
     .opa-preview-list { display: none; }
-    #opa_preview_title { font-size: 1rem; margin-bottom: 0.25rem; }
+    .opa-price-breakdown { display: flex !important; flex-direction: column; gap: 0.25rem; margin-top: 0 !important; padding-top: 0 !important; border-top: none !important; width: 100%; }
+    .opa-price-breakdown .opa-ps-row { display: flex; justify-content: space-between; font-size: 0.8rem !important; }
+    .opa-price-breakdown .opa-ps-row:last-child { margin-top: 0.25rem !important; font-size: 1rem !important; font-weight: 700; color: #0f172a !important; border-top: 1px dashed #cbd5e1; padding-top: 0.25rem; }
+    
+    #opa_preview_title { font-size: 1rem; margin-bottom: 0.25rem; font-weight: 600; width: 100%; }
     .opa-preview-price { font-size: 1.25rem; margin: 0; padding: 0; border: none; }
     
     .opa-section-content { padding-left: 0; }
