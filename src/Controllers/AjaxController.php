@@ -573,18 +573,10 @@ class AjaxController {
 
     public function ajax_front_get_blocked_dates(): void {
         try {
-            global $wpdb;
-            $container_id = (int) ( $_GET['container_id'] ?? 0 );
-            
-            // We assume a container is fully booked if there is any active booking for that container on a given date.
-            // Exclude cancelled/refunded bookings.
-            $sql = $wpdb->prepare( "
-                SELECT booking_date FROM {$wpdb->prefix}opa_bookings 
-                WHERE container_id = %d AND status NOT IN ('cancelled', 'refunded')
-            ", $container_id );
-            
-            $results = $wpdb->get_col( $sql );
-            wp_send_json_success( $results );
+            // As per requirement: Unlimited Daily Capacity.
+            // If a date is available according to rules, unlimited customers can book it.
+            // Therefore, we do not block any dates based on existing bookings.
+            wp_send_json_success( [] );
         } catch ( \Exception $e ) {
             wp_send_json_error( $e->getMessage() );
         }
