@@ -21,6 +21,14 @@ class MigrationManager {
             dbDelta( $sql );
         }
 
+        global $wpdb;
+        $table = $wpdb->prefix . 'opa_bookings';
+        $column = 'delivery_notes';
+        $result = $wpdb->get_results("SHOW COLUMNS FROM `$table` LIKE '$column'");
+        if (empty($result)) {
+            $wpdb->query("ALTER TABLE `$table` ADD COLUMN `$column` longtext NULL AFTER `address_line`");
+        }
+
         // Update the installed version in options
         update_option( 'opa_booking_db_version', OPA_BOOKING_VERSION );
     }
