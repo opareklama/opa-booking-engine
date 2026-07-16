@@ -187,18 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Auto-select Default City
-    if (opaBookingObj.default_city) {
-        let defCityStr = String(opaBookingObj.default_city);
-        for (let i = 0; i < els.citySelect.options.length; i++) {
-            if (els.citySelect.options[i].value === defCityStr) {
-                els.citySelect.selectedIndex = i;
-                els.citySelect.dispatchEvent(new Event('change'));
-                break;
-            }
-        }
-    }
-
     function matchCity(cityName) {
         let matched = false;
         for (let i = 0; i < els.citySelect.options.length; i++) {
@@ -593,6 +581,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeSlideOver() {
         els.slideOverlay.classList.remove('is-active');
         els.slidePanel.classList.remove('is-active');
+    }
+
+    // Auto-select Default City (Must be after all event listeners are attached)
+    if (opaBookingObj.default_city) {
+        let defCityStr = String(opaBookingObj.default_city);
+        for (let i = 0; i < els.citySelect.options.length; i++) {
+            if (els.citySelect.options[i].value === defCityStr) {
+                els.citySelect.selectedIndex = i;
+                els.citySelect.dispatchEvent(new Event('change'));
+                break;
+            }
+        }
     }
 
 });
