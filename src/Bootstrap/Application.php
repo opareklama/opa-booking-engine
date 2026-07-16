@@ -72,7 +72,7 @@ class Application {
         $frontend_controller = $this->container->get( \OpaReklama\Booking\Controllers\FrontendController::class );
         add_action( 'init', [ $frontend_controller, 'register_shortcodes' ] );
         add_action( 'init', function() {
-            load_plugin_textdomain( 'opa-booking', false, dirname( plugin_basename( OPA_BOOKING_PLUGIN_DIR . 'opa-booking.php' ) ) . '/languages' );
+            load_plugin_textdomain( 'opa-booking', false, dirname( plugin_basename( OPA_BOOKING_PLUGIN_DIR . 'opa-booking-engine.php' ) ) . '/languages' );
         } );
     }
 
